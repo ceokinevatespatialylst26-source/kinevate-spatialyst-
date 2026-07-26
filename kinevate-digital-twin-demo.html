@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinevate Spatialyst — Digital Twin Concept Demo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  :root {
+    --navy: #0c1220; --navy-deep: #080d16; --line: #3d5c78; --line-dim: #22364a;
+    --brass: #c68a4e; --brass-bright: #dba765; --text: #dbe4ec; --text-dim: #7691a8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--navy-deep); color:var(--text); font-family:'IBM Plex Sans',sans-serif; overflow:hidden; }
+  #scene-wrap { position:relative; width:100vw; height:100vh; }
+  canvas { display:block; }
+
+  #topbar {
+    position:absolute; top:0; left:0; right:0; padding:16px 20px;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    background:linear-gradient(180deg, rgba(8,13,22,0.9), rgba(8,13,22,0));
+    pointer-events:none; z-index:10;
+  }
+  #topbar h1 { font-family:'Space Grotesk',sans-serif; font-size:18px; color:var(--brass-bright); }
+  #topbar .sub { font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; margin-top:2px; }
+
+  #hud {
+    position:absolute; top:70px; right:20px; width:230px;
+    background:rgba(12,18,32,0.85); border:1px solid var(--line-dim); border-radius:10px;
+    padding:14px 16px; font-family:'IBM Plex Mono',monospace; font-size:12px; z-index:10;
+  }
+  #hud .row { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--line-dim); color:var(--text-dim); }
+  #hud .row span:last-child { color:var(--brass-bright); font-weight:600; }
+  #hud h2 { font-family:'Space Grotesk',sans-serif; font-size:13px; color:var(--text); margin-bottom:8px; }
+
+  #legend {
+    position:absolute; bottom:20px; left:20px;
+    background:rgba(12,18,32,0.85); border:1px solid var(--line-dim); border-radius:10px;
+    padding:12px 16px; font-size:11px; z-index:10; max-width:240px;
+  }
+  #legend .item { display:flex; align-items:center; gap:8px; margin:4px 0; color:var(--text-dim); }
+  #legend .swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+
+  #disclaimer {
+    position:absolute; bottom:20px; right:20px; max-width:260px;
+    background:rgba(198,138,78,0.08); border-left:3px solid var(--brass);
+    padding:10px 14px; font-size:10.5px; color:var(--text-dim); border-radius:4px; z-index:10;
+  }
+
+  #hint {
+    position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);
+    z-index:10; opacity:0.8;
+  }
+
+  #concept-badge {
+    position:fixed; top:0; left:0; right:0;
+    background:#dba765; color:#0c1220;
+    text-align:center; padding:8px 16px;
+    font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:12px;
+    letter-spacing:0.06em; z-index:100;
+  }
+</style>
+</head>
+<body>
+<div id="concept-badge">⚠ CONCEPT PREVIEW — Illustrative visualization only. Not a live product, not connected to real sensor data.</div>
+<div id="scene-wrap" style="padding-top:34px;">
+
+  <div id="topbar">
+    <div>
+      <h1>KINEVATE SPATIALYST — Digital Twin Concept Demo</h1>
+      <div class="sub">Reference scale: ~20,000 acres (motorsport/mixed-use park model)</div>
+    </div>
+  </div>
+
+  <div id="hud">
+    <h2>LIVE TELEMETRY (SIMULATED)</h2>
+    <div class="row"><span>Visitors on-site</span><span id="t-visitors">—</span></div>
+    <div class="row"><span>Parking occupancy</span><span id="t-parking">—</span></div>
+    <div class="row"><span>Track zone status</span><span id="t-track">—</span></div>
+    <div class="row"><span>Sensor nodes online</span><span id="t-sensors">—</span></div>
+    <div class="row" style="border-bottom:none;"><span>Weather (zone avg)</span><span id="t-weather">—</span></div>
+  </div>
+
+  <div id="legend">
+    <div class="item"><div class="swatch" style="background:#5b7fa6;"></div>Track / Circuit Zone</div>
+    <div class="item"><div class="swatch" style="background:#c68a4e;"></div>Hotel / Resort District</div>
+    <div class="item"><div class="swatch" style="background:#7a8f6e;"></div>Entrance / Plaza</div>
+    <div class="item"><div class="swatch" style="background:#8a6f9e;"></div>RV / Campground</div>
+    <div class="item"><div class="swatch" style="background:#555f6e;"></div>Parking / Logistics</div>
+  </div>
+
+  <div id="disclaimer">
+    <strong style="color:var(--brass-bright);">Note:</strong> This is a conceptual visualization demo to illustrate the digital twin vision — not a production platform. Zones, telemetry, and scale are simulated for demonstration purposes.
+  </div>
+
+  <div id="hint">Drag to rotate · Scroll to zoom</div>
+</div>
+
+<script>
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x080d16);
+  scene.fog = new THREE.Fog(0x080d16, 60, 220);
+
+  const BADGE_H = 34;
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth/(window.innerHeight-BADGE_H), 0.1, 1000);
+  camera.position.set(0, 55, 90);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight - BADGE_H);
+  document.getElementById('scene-wrap').appendChild(renderer.domElement);
+
+  // Lighting
+  scene.add(new THREE.AmbientLight(0x6677aa, 0.6));
+  const sun = new THREE.DirectionalLight(0xffe4c4, 1.0);
+  sun.position.set(40, 60, 30);
+  scene.add(sun);
+  const rim = new THREE.DirectionalLight(0x4a6fa5, 0.4);
+  rim.position.set(-40, 20, -30);
+  scene.add(rim);
+
+  // Ground — represents the ~20,000 acre footprint
+  const groundGeo = new THREE.PlaneGeometry(160, 160, 20, 20);
+  const groundMat = new THREE.MeshStandardMaterial({ color: 0x14301f, roughness: 1 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  scene.add(ground);
+
+  // Grid overlay (subtle, evokes surveyed/mapped terrain)
+  const grid = new THREE.GridHelper(160, 32, 0x22364a, 0x1a2638);
+  grid.position.y = 0.02;
+  scene.add(grid);
+
+  function addZone(x, z, w, d, h, color) {
+    const geo = new THREE.BoxGeometry(w, h, d);
+    const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, h/2, z);
+    scene.add(mesh);
+    return mesh;
+  }
+
+  // Central spine / boulevard
+  addZone(0, 0, 6, 70, 0.3, 0xdba765);
+
+  // Track / Circuit zone (north)
+  addZone(0, -45, 55, 30, 1.2, 0x5b7fa6);
+
+  // Hotel / Resort district (west cluster)
+  addZone(-35, 10, 18, 18, 3.5, 0xc68a4e);
+  addZone(-35, 32, 14, 12, 2.8, 0xc68a4e);
+
+  // Entrance plaza (south)
+  addZone(0, 55, 20, 14, 1.0, 0x7a8f6e);
+
+  // RV / Campground (east)
+  addZone(38, 30, 22, 22, 0.6, 0x8a6f9e);
+
+  // Parking / logistics (southeast + southwest)
+  addZone(30, 55, 16, 12, 0.4, 0x555f6e);
+  addZone(-30, 55, 16, 12, 0.4, 0x555f6e);
+
+  // Innovation campus (far north)
+  addZone(-20, -70, 20, 14, 2.0, 0x6e7a9e);
+
+  // Simple orbit via mouse drag (no external addon needed)
+  let isDragging = false, prevX = 0, prevY = 0;
+  let theta = Math.atan2(camera.position.x, camera.position.z);
+  let phi = Math.acos(camera.position.y / camera.position.length());
+  let radius = camera.position.length();
+
+  function updateCamera() {
+    camera.position.x = radius * Math.sin(phi) * Math.sin(theta);
+    camera.position.z = radius * Math.sin(phi) * Math.cos(theta);
+    camera.position.y = radius * Math.cos(phi);
+    camera.lookAt(0, 0, 0);
+  }
+  updateCamera();
+
+  renderer.domElement.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+  window.addEventListener('mouseup', () => isDragging = false);
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    theta -= (e.clientX - prevX) * 0.005;
+    phi -= (e.clientY - prevY) * 0.005;
+    phi = Math.max(0.2, Math.min(1.4, phi));
+    prevX = e.clientX; prevY = e.clientY;
+    updateCamera();
+  });
+  renderer.domElement.addEventListener('wheel', e => {
+    radius += e.deltaY * 0.05;
+    radius = Math.max(30, Math.min(160, radius));
+    updateCamera();
+  });
+
+  // touch support
+  let lastTouch = null;
+  renderer.domElement.addEventListener('touchstart', e => { lastTouch = e.touches[0]; });
+  renderer.domElement.addEventListener('touchmove', e => {
+    if (!lastTouch) return;
+    const t = e.touches[0];
+    theta -= (t.clientX - lastTouch.clientX) * 0.005;
+    phi -= (t.clientY - lastTouch.clientY) * 0.005;
+    phi = Math.max(0.2, Math.min(1.4, phi));
+    lastTouch = t;
+    updateCamera();
+  });
+  renderer.domElement.addEventListener('touchend', () => lastTouch = null);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/(window.innerHeight-BADGE_H);
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight - BADGE_H);
+  });
+
+  // Simulated live telemetry
+  function rand(min, max) { return Math.floor(Math.random()*(max-min)+min); }
+  function updateTelemetry() {
+    document.getElementById('t-visitors').textContent = rand(8000, 14500).toLocaleString();
+    document.getElementById('t-parking').textContent = rand(55, 92) + '%';
+    document.getElementById('t-track').textContent = Math.random() > 0.15 ? 'ACTIVE' : 'MAINTENANCE';
+    document.getElementById('t-sensors').textContent = rand(240, 256) + ' / 256';
+    document.getElementById('t-weather').textContent = rand(58, 84) + '°F, Clear';
+  }
+  updateTelemetry();
+  setInterval(updateTelemetry, 3000);
+</script>
+</body>
+</html>
