@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinevate Master Rebuild Package PDF Export</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #222;
+        }
+        .no-print {
+            background-color: #0366d6;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .no-print:hover {
+            background-color: #024ea4;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="no-print" onclick="window.print()">Download / Save as PDF</button>
+
+    <h1>KINEVATE SPATIALYST INC.</h1>
+    <h2>Early Hazard Detection & Screening System — Master Rebuild Package</h2>
+
+    <p><strong>1. Executive Decision</strong><br>
+    Kinevate should rebuild the product around an early-warning mission rather than a pathogen-identification mission. The device detects validated abnormal or hazard-associated signals and warns users that a location or material requires caution or lab confirmation.</p>
+
+    <p><strong>2. Product Tiers</strong><br>
+    * <strong>Analyzer Elite:</strong> Portable screening/early-warning unit for public/commercial environments.<br>
+    * <strong>Analyzer Elite Pro:</strong> Ruggedized screening unit for trained field/industrial operators.</p>
+
+    <p><strong>3. Four-State Output Model</strong><br>
+    * NORMAL<br>
+    * CAUTION / RETEST<br>
+    * POTENTIAL HAZARD DETECTED<br>
+    * OUTSIDE VALIDATION RANGE</p>
+
+    <!-- Add additional sections as needed -->
+
+</body>
+</html>
