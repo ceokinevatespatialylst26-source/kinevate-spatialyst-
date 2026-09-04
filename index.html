@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINEVATE Analyzer Elite — Early Warning for the Living Environment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap');
+
+:root{
+  --bg:#0A121B;
+  --panel:#101B27;
+  --panel-2:#0D1721;
+  --border:#22323F;
+  --gold:#D9A256;
+  --gold-dim:rgba(217,162,86,0.15);
+  --text:#EDF1F4;
+  --text-dim:#8FA2B0;
+  --green:#6FCF97;
+  --amber:#D9A256;
+  --elevated:#D97B56;
+  --outside:#6B7C89;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'IBM Plex Sans', system-ui, sans-serif;
+  line-height:1.6;
+}
+h1,h2,h3{
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  font-weight:700;
+  line-height:1.15;
+  margin:0;
+}
+.mono{
+  font-family:'IBM Plex Mono', monospace;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+.wrap{max-width:640px; margin:0 auto; padding:0 24px;}
+
+/* Top bar */
+.topbar{border-bottom:1px solid var(--border); background:var(--bg);}
+.topbar-inner{
+  max-width:640px; margin:0 auto; padding:20px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.brand{display:flex; align-items:center; gap:12px;}
+.brand-mark{
+  width:34px; height:26px; display:flex; align-items:flex-end; gap:3px;
+}
+.brand-mark span{width:6px; background:var(--gold); border-radius:1px;}
+.brand-mark span:nth-child(1){height:40%;}
+.brand-mark span:nth-child(2){height:100%;}
+.brand-mark span:nth-child(3){height:65%;}
+.brand-text .name{font-family:'Space Grotesk'; font-weight:700; font-size:1.05rem; letter-spacing:0.03em;}
+.brand-text .sub{font-family:'IBM Plex Mono'; font-size:0.75rem; color:var(--text-dim);}
+.help-btn{
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--border);
+  color:var(--text-dim); display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono'; cursor:default;
+}
+.top-links{display:flex; gap:18px;}
+.top-links a{
+  color:var(--text-dim); text-decoration:none; font-size:0.85rem;
+  font-family:'IBM Plex Mono';
+}
+.top-links a:hover{color:var(--gold);}
+@media (max-width:420px){
+  .top-links{gap:12px;}
+  .top-links a{font-size:0.72rem;}
+}
+
+/* Hero */
+.hero{padding:56px 24px 40px;}
+.kicker{color:var(--gold); font-size:0.78rem; font-weight:600; margin:0 0 16px;}
+.hero h1{font-size:2.6rem; max-width:11ch; margin-bottom:22px;}
+.hero p{color:#C4D0D8; font-size:1.08rem; max-width:46ch;}
+.cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:26px;}
+.btn{
+  font-family:'Space Grotesk'; font-weight:600; font-size:1rem;
+  padding:15px 22px; border-radius:10px; cursor:pointer; border:1px solid transparent;
+  text-align:center;
+}
+.btn-gold{background:var(--gold); color:#1A130A;}
+.btn-outline{background:transparent; color:var(--text); border-color:var(--border);}
+.btn:hover{filter:brightness(1.08);}
+
+/* Orbit diagram */
+.orbit-section{padding:20px 24px 60px; display:flex; justify-content:center;}
+.orbit-wrap{position:relative; width:100%; max-width:420px; aspect-ratio:1/1;}
+.orbit-wrap svg{width:100%; height:100%;}
+.orbit-label{
+  position:absolute; font-family:'IBM Plex Mono'; font-size:0.8rem;
+  color:var(--text-dim); letter-spacing:0.08em;
+}
+
+/* Protocol nav */
+.protocol-nav{
+  margin:0 24px 56px; border:1px solid var(--border); border-radius:14px;
+  background:var(--panel); overflow:hidden;
+}
+.protocol-row{
+  display:flex; align-items:center; gap:18px; padding:22px 22px;
+  border-bottom:1px solid var(--border); cursor:pointer; background:transparent;
+}
+.protocol-row:last-child{border-bottom:none;}
+.protocol-row.active{border-left:3px solid var(--gold); background:var(--panel-2);}
+.protocol-num{font-family:'IBM Plex Mono'; color:var(--gold); font-size:0.95rem;}
+.protocol-row.active .protocol-num{color:var(--gold);}
+.protocol-row:not(.active) .protocol-num{color:var(--text-dim);}
+.protocol-title{font-family:'Space Grotesk'; font-weight:600; font-size:1.15rem;}
+.protocol-sub{color:var(--text-dim); font-size:0.9rem;}
+
+/* Section shell */
+.section{margin:0 24px 32px; padding:32px 26px; border:1px solid var(--border); border-radius:14px; background:var(--panel);}
+.section .kicker{margin-bottom:14px;}
+.section h2{font-size:1.6rem; margin-bottom:20px;}
+.tag{
+  display:inline-block; font-family:'IBM Plex Mono'; font-size:0.75rem;
+  color:var(--gold); border:1px solid var(--gold); border-radius:8px;
+  padding:6px 12px; margin-bottom:22px;
+}
+
+/* Domain grid */
+.domain-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.domain-header .mono{font-size:0.78rem; color:var(--text-dim);}
+.mock-pill{
+  font-family:'IBM Plex Mono'; font-size:0.72rem; color:var(--gold);
+  border:1px solid var(--gold); border-radius:8px; padding:5px 10px;
+}
+.domain-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.domain-card{
+  border:1px solid var(--border); border-radius:12px; padding:20px;
+  background:var(--panel-2); cursor:pointer; transition:border-color .15s;
+}
+.domain-card.active{border-color:var(--gold); background:var(--gold-dim);}
+.domain-icon{font-size:1.3rem; margin-bottom:14px; display:block;}
+.domain-name{font-family:'Space Grotesk'; font-weight:600; margin-bottom:6px;}
+.domain-desc{color:var(--text-dim); font-size:0.85rem;}
+
+/* Selected protocol callout */
+.selected-callout{
+  margin-top:24px; padding-left:18px; border-left:3px solid var(--gold);
+}
+.selected-callout .mono{color:var(--text-dim); font-size:0.75rem; margin-bottom:6px;}
+.selected-callout h3{font-size:1.25rem; margin-bottom:6px;}
+.selected-callout p{color:var(--text-dim); font-size:0.92rem; margin:0 0 20px;}
+
+/* Screening run */
+.run-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:36px;}
+.run-id{
+  font-family:'IBM Plex Mono'; font-size:0.75rem; color:var(--gold);
+  border:1px solid var(--gold); border-radius:8px; padding:6px 12px;
+}
+.ring-wrap{display:flex; flex-direction:column; align-items:center; padding:20px 0 30px;}
+.ring{
+  width:220px; height:220px; border-radius:50%; border:2px solid var(--border);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transition:border-color .3s;
+}
+.ring.scanning{border-color:var(--gold); animation:pulse 1.2s ease-in-out infinite;}
+.ring.normal{border-color:var(--green);}
+.ring.caution{border-color:var(--amber);}
+.ring.elevated{border-color:var(--elevated);}
+.ring.outside{border-color:var(--outside);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.55;}}
+.ring-state{font-family:'Space Grotesk'; font-weight:700; font-size:1.6rem; color:var(--gold); letter-spacing:0.02em;}
+.ring.normal .ring-state{color:var(--green);}
+.ring.caution .ring-state{color:var(--amber);}
+.ring.elevated .ring-state{color:var(--elevated);}
+.ring.outside .ring-state{color:var(--outside);}
+.ring-sub{color:var(--text-dim); font-size:0.9rem; margin-top:6px;}
+
+.status-list{border-top:1px solid var(--border); padding-top:22px; margin-top:6px;}
+.status-row{display:flex; justify-content:space-between; padding:10px 0; font-size:0.95rem;}
+.status-val{font-family:'IBM Plex Mono'; font-size:0.82rem;}
+.status-val.ready{color:var(--green);}
+.status-val.standby{color:var(--text-dim);}
+.status-val.supported{color:var(--green);}
+
+.cancel-btn{
+  width:100%; margin-top:20px; padding:16px; border-radius:10px;
+  border:1px solid var(--border); background:transparent; color:var(--text-dim);
+  font-family:'Space Grotesk'; font-weight:600; cursor:not-allowed;
+}
+.cancel-btn.enabled{color:var(--text); cursor:pointer; border-color:var(--gold);}
+
+/* Four-state legend */
+.legend-statement{font-size:1.15rem; margin-bottom:22px; max-width:44ch;}
+.pill-grid{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:24px;}
+.pill{
+  font-family:'IBM Plex Mono'; font-size:0.82rem; padding:10px 16px;
+  border-radius:8px; border:1px solid; cursor:pointer; background:transparent; color:var(--text);
+}
+.pill.normal{border-color:var(--green);}
+.pill.caution{border-color:var(--amber);}
+.pill.elevated{border-color:var(--elevated);}
+.pill.outside{border-color:var(--outside);}
+.pill.selected{background:rgba(255,255,255,0.06);}
+
+.result-box{
+  display:flex; gap:16px; padding:20px; border:1px solid var(--border);
+  border-radius:12px; align-items:flex-start;
+}
+.result-icon{
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem;
+}
+.result-box h3{font-size:1.05rem; margin-bottom:6px;}
+.result-box p{color:var(--text-dim); font-size:0.9rem; margin:0;}
+
+footer{padding:40px 24px 64px; color:var(--text-dim); font-size:0.85rem; font-family:'IBM Plex Mono';}
+footer p{margin:4px 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark"><span></span><span></span><span></span></div>
+      <div class="brand-text">
+        <div class="name">KINEVATE</div>
+        <div class="sub">Analyzer Elite</div>
+      </div>
+    </div>
+    <nav class="top-links">
+      <a href="waitlist.html">Waitlist</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </nav>
+  </div>
+</div>
+
+<section class="hero wrap">
+  <p class="kicker mono">Kinevate Spatialyst Inc. · Sensor-Fusion Prototype</p>
+  <h1>Early warning for the living environment.</h1>
+  <p>KINEVATE screens air, water, surfaces, land, and environmental conditions to help protect human, animal, plant, and agricultural life. It is an early-warning system — not a lab-confirmed identification device.</p>
+  <div class="cta-row">
+    <button class="btn btn-gold" onclick="selectEdition(0)">Open citizen edition</button>
+    <button class="btn btn-outline" onclick="selectEdition(1)">Open pro field edition</button>
+  </div>
+</section>
+
+<section class="orbit-section">
+  <div class="orbit-wrap">
+    <svg viewBox="0 0 400 400">
+      <ellipse cx="200" cy="200" rx="150" ry="80" fill="none" stroke="var(--border)" stroke-width="1.5" transform="rotate(0 200 200)"/>
+      <ellipse cx="200" cy="200" rx="150" ry="80" fill="none" stroke="var(--border)" stroke-width="1.5" transform="rotate(45 200 200)"/>
+      <ellipse cx="200" cy="200" rx="150" ry="80" fill="none" stroke="var(--border)" stroke-width="1.5" transform="rotate(90 200 200)"/>
+      <ellipse cx="200" cy="200" rx="150" ry="80" fill="none" stroke="var(--border)" stroke-width="1.5" transform="rotate(135 200 200)"/>
+      <circle cx="200" cy="200" r="90" fill="var(--panel)" stroke="var(--gold)" stroke-width="1.5"/>
+      <circle cx="200" cy="150" r="4" fill="var(--green)"/>
+      <text x="200" y="192" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="26" fill="var(--gold)">FUSION</text>
+      <text x="200" y="216" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)" letter-spacing="1">05 SENSOR DOMAINS</text>
+    </svg>
+    <div class="orbit-label" style="top:2%; left:38%;">AIR</div>
+    <div class="orbit-label" style="top:38%; right:0%;">WATER</div>
+    <div class="orbit-label" style="bottom:12%; right:12%;">LAND</div>
+    <div class="orbit-label" style="bottom:10%; left:4%;">LIFE</div>
+  </div>
+</section>
+
+<nav class="protocol-nav wrap" style="margin-left:auto; margin-right:auto;">
+  <div class="protocol-row active" id="tab-0" onclick="selectEdition(0)">
+    <span class="protocol-num">01</span>
+    <div>
+      <div class="protocol-title">Citizen Edition</div>
+      <div class="protocol-sub">Personal &amp; household screening</div>
+    </div>
+  </div>
+  <div class="protocol-row" id="tab-1" onclick="selectEdition(1)">
+    <span class="protocol-num">02</span>
+    <div>
+      <div class="protocol-title">Analyzer Elite Pro</div>
+      <div class="protocol-sub">Field / industrial operations</div>
+    </div>
+  </div>
+  <div class="protocol-row" id="tab-2" onclick="selectEdition(2)">
+    <span class="protocol-num">03</span>
+    <div>
+      <div class="protocol-title">Terms &amp; disclosure</div>
+      <div class="protocol-sub">Safety boundaries &amp; language</div>
+    </div>
+  </div>
+</nav>
+
+<div id="citizen-flow" style="display:block;">
+  <section class="section wrap">
+    <p class="kicker mono">Citizen Edition · Rapid Screen</p>
+    <h2>Choose a screening surface</h2>
+    <span class="tag">PROTOCOL C-01</span>
+
+    <div class="domain-header">
+      <span class="mono">Input domain</span>
+      <span class="mock-pill">MOCK DEVICE</span>
+    </div>
+
+    <div class="domain-grid" id="domainGrid">
+      <div class="domain-card active" data-domain="air">
+        <span class="domain-icon">◌</span>
+        <div class="domain-name">Air</div>
+        <div class="domain-desc">VOC · PM2.5 · CO₂</div>
+      </div>
+      <div class="domain-card" data-domain="water">
+        <span class="domain-icon">≈</span>
+        <div class="domain-name">Water</div>
+        <div class="domain-desc">Clarity · chemistry · load</div>
+      </div>
+      <div class="domain-card" data-domain="surface">
+        <span class="domain-icon">▦</span>
+        <div class="domain-name">Surface</div>
+        <div class="domain-desc">Residue · contact area</div>
+      </div>
+      <div class="domain-card" data-domain="food">
+        <span class="domain-icon">⚡</span>
+        <div class="domain-name">Food</div>
+        <div class="domain-desc">Swab + spectral scan</div>
+      </div>
+      <div class="domain-card" data-domain="garden">
+        <span class="domain-icon">❁</span>
+        <div class="domain-name">Garden / soil</div>
+        <div class="domain-desc">Moisture · stress markers</div>
+      </div>
+      <div class="domain-card" data-domain="environment">
+        <span class="domain-icon">✦</span>
+        <div class="domain-name">Environment</div>
+        <div class="domain-desc">Multi-domain snapshot</div>
+      </div>
+    </div>
+
+    <div class="selected-callout">
+      <p class="mono">Selected protocol</p>
+      <h3 id="selTitle">Air quality analysis</h3>
+      <p id="selDesc">Fast screen for common indoor and outdoor air markers.</p>
+      <button class="btn btn-gold" style="width:100%;" onclick="startScan()">Start screening scan →</button>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="run-header">
+      <span class="mono" style="color:var(--text-dim); font-size:0.78rem;">Screening run</span>
+      <span class="run-id" id="runId">RUN C-1042</span>
+    </div>
+
+    <div class="ring-wrap">
+      <div class="ring" id="ring">
+        <div class="ring-state" id="ringState">READY</div>
+        <div class="ring-sub" id="ringSub">Awaiting input</div>
+      </div>
+    </div>
+
+    <div class="status-list">
+      <div class="status-row"><span>Sensor handshake</span><span class="status-val ready">READY</span></div>
+      <div class="status-row"><span>Fusion model</span><span class="status-val standby" id="fusionStatus">STANDBY</span></div>
+      <div class="status-row"><span>Validation envelope</span><span class="status-val supported">SUPPORTED</span></div>
+    </div>
+
+    <button class="cancel-btn" id="cancelBtn" onclick="cancelRun()">Cancel run</button>
+  </section>
+
+  <section class="section wrap">
+    <p class="kicker mono">Four-State Output Language</p>
+    <p class="legend-statement">Results are screening signals, not pathogen or substance identification.</p>
+
+    <div class="pill-grid">
+      <button class="pill normal" data-state="normal" onclick="previewState('normal')">Normal</button>
+      <button class="pill caution" data-state="caution" onclick="previewState('caution')">Caution / Retest</button>
+      <button class="pill elevated" data-state="elevated" onclick="previewState('elevated')">Elevated reading</button>
+      <button class="pill outside" data-state="outside" onclick="previewState('outside')">Outside range</button>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-icon">+</div>
+      <div>
+        <h3 id="resultTitle">No result selected</h3>
+        <p id="resultDesc">Run a mock scan or select a state above to preview the result experience.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="pro-flow" style="display:none;">
+  <section class="section wrap">
+    <p class="kicker mono">Analyzer Elite Pro · Field Screen</p>
+    <h2>Choose a screening surface</h2>
+    <span class="tag">PROTOCOL P-01</span>
+
+    <div class="domain-header">
+      <span class="mono">Input domain</span>
+      <span class="mock-pill">MOCK DEVICE</span>
+    </div>
+
+    <div class="domain-grid" id="proDomainGrid">
+      <div class="domain-card active" data-domain="air">
+        <span class="domain-icon">◌</span>
+        <div class="domain-name">Air</div>
+        <div class="domain-desc">VOC · PM2.5 · CO₂</div>
+      </div>
+      <div class="domain-card" data-domain="water">
+        <span class="domain-icon">≈</span>
+        <div class="domain-name">Water</div>
+        <div class="domain-desc">Clarity · chemistry · load</div>
+      </div>
+      <div class="domain-card" data-domain="surface">
+        <span class="domain-icon">▦</span>
+        <div class="domain-name">Surface</div>
+        <div class="domain-desc">Residue · contact area</div>
+      </div>
+      <div class="domain-card" data-domain="chemical">
+        <span class="domain-icon">⚡</span>
+        <div class="domain-name">Raman scan</div>
+        <div class="domain-desc">785nm spectral trace</div>
+      </div>
+      <div class="domain-card" data-domain="land">
+        <span class="domain-icon">❁</span>
+        <div class="domain-name">Land / site</div>
+        <div class="domain-desc">Ground &amp; perimeter sweep</div>
+      </div>
+      <div class="domain-card" data-domain="environment">
+        <span class="domain-icon">✦</span>
+        <div class="domain-name">Environment</div>
+        <div class="domain-desc">Multi-domain snapshot</div>
+      </div>
+    </div>
+
+    <div class="selected-callout">
+      <p class="mono">Selected protocol</p>
+      <h3 id="proSelTitle">Air quality analysis</h3>
+      <p id="proSelDesc">Field screen for common indoor and outdoor air markers.</p>
+      <button class="btn btn-gold" style="width:100%;" onclick="startScan('pro')">Start screening scan →</button>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="run-header">
+      <span class="mono" style="color:var(--text-dim); font-size:0.78rem;">Screening run</span>
+      <span class="run-id" id="proRunId">RUN P-1042</span>
+    </div>
+
+    <div class="ring-wrap">
+      <div class="ring" id="proRing">
+        <div class="ring-state" id="proRingState">READY</div>
+        <div class="ring-sub" id="proRingSub">Awaiting input</div>
+      </div>
+    </div>
+
+    <div class="status-list">
+      <div class="status-row"><span>Sensor handshake</span><span class="status-val ready">READY</span></div>
+      <div class="status-row"><span>Raman module</span><span class="status-val ready">READY</span></div>
+      <div class="status-row"><span>Fusion model</span><span class="status-val standby" id="proFusionStatus">STANDBY</span></div>
+      <div class="status-row"><span>Validation envelope</span><span class="status-val supported">SUPPORTED</span></div>
+    </div>
+
+    <button class="cancel-btn" id="proCancelBtn" onclick="cancelRun('pro')">Cancel run</button>
+  </section>
+
+  <section class="section wrap">
+    <p class="kicker mono">Four-State Output Language</p>
+    <p class="legend-statement">Results are screening signals, not pathogen or substance identification.</p>
+
+    <div class="pill-grid">
+      <button class="pill normal" data-state="normal" onclick="previewState('normal','pro')">Normal</button>
+      <button class="pill caution" data-state="caution" onclick="previewState('caution','pro')">Caution / Retest</button>
+      <button class="pill elevated" data-state="elevated" onclick="previewState('elevated','pro')">Elevated reading</button>
+      <button class="pill outside" data-state="outside" onclick="previewState('outside','pro')">Outside range</button>
+    </div>
+
+    <div class="result-box" id="proResultBox">
+      <div class="result-icon">+</div>
+      <div>
+        <h3 id="proResultTitle">No result selected</h3>
+        <p id="proResultDesc">Run a mock scan or select a state above to preview the result experience.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="terms-flow" style="display:none;">
+  <section class="section wrap">
+    <p class="kicker mono">Safety Boundaries &amp; Language</p>
+    <h2>Terms &amp; disclosure</h2>
+    <p style="color:var(--text-dim);">KINEVATE Analyzer Elite (Citizen and Pro Field/Industrial editions) is a screening aid, not a diagnostic or lab-confirmed identification device. Results describe a screening signal only, using four defined states: <strong style="color:var(--green);">Normal</strong>, <strong style="color:var(--amber);">Caution / Retest</strong>, <strong style="color:var(--elevated);">Elevated reading detected</strong>, and <strong style="color:var(--outside);">Outside validation range</strong>.</p>
+    <p style="color:var(--text-dim);">An elevated reading is a prompt to retest or seek lab-based confirmation — it is not a claim that a specific pathogen, chemical, or substance has been identified. The device is designed to fail safely: it will never report Normal when a sensor fault, calibration error, low battery, or out-of-range operating condition is present.</p>
+    <p style="color:var(--text-dim);">This page and the interactive demo above use a mock device and simulated results for demonstration purposes only.</p>
+    <p><a href="terms.html" style="color:var(--gold);">Read the full Terms of Use →</a></p>
+  </section>
+</div>
+
+<footer class="wrap">
+  <p>KINEVATE Analyzer Elite · Prototype v0.3</p>
+  <p>Screening aid · not a confirmed identification.</p>
+  <p style="margin-top:18px; color:var(--text-dim);">© <span id="year"></span> KINEVATE SPATIALYST INC.</p>
+</footer>
+
+<script>
+const domainData = {
+  air:        { title:"Air quality analysis",     desc:"Fast screen for common indoor and outdoor air markers." },
+  water:      { title:"Water quality analysis",    desc:"Rapid check of clarity, chemistry, and particulate load." },
+  surface:    { title:"Surface residue screen",    desc:"Contactless scan of contact surfaces for residue signals." },
+  food:       { title:"Food surface screen",       desc:"Spectral scan of a food surface after a light swab pass." },
+  garden:     { title:"Garden & soil screen",      desc:"Checks moisture and plant-stress markers in soil or leaf surface." },
+  environment:{ title:"Environment snapshot",      desc:"A combined read across available domains in one pass." }
+};
+
+const stateData = {
+  normal:   { label:"NORMAL",                    desc:"Readings fall within the expected baseline range for this environment." },
+  caution:  { label:"CAUTION / RETEST",           desc:"Reading is borderline. A rescan is recommended to confirm." },
+  elevated: { label:"ELEVATED READING DETECTED",  desc:"Reading falls outside the normal baseline. This is a screening signal, not a confirmed identification — a lab-based follow-up is recommended." },
+  outside:  { label:"OUTSIDE VALIDATION RANGE",   desc:"Conditions (angle, distance, temperature, etc.) fell outside the device's validated operating envelope, so no result was produced." }
+};
+
+const proDomainData = {
+  air:        { title:"Air quality analysis",     desc:"Field screen for common indoor and outdoor air markers." },
+  water:      { title:"Water quality analysis",    desc:"Rapid check of clarity, chemistry, and particulate load." },
+  surface:    { title:"Surface residue screen",    desc:"Contactless scan of contact surfaces for residue signals." },
+  chemical:   { title:"Raman spectral scan",       desc:"785nm Raman trace for a deeper spectral read in the field." },
+  land:       { title:"Land / site sweep",         desc:"Ground and perimeter scan across a wider field area." },
+  environment:{ title:"Environment snapshot",      desc:"A combined read across available domains in one pass." }
+};
+
+// -- Domain card selection (works for both Citizen and Pro grids) --
+function wireDomainGrid(gridId, dataSet, selTitleId, selDescId, edition){
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  grid.querySelectorAll('.domain-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      grid.querySelectorAll('.domain-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      const d = dataSet[card.dataset.domain];
+      document.getElementById(selTitleId).textContent = d.title;
+      document.getElementById(selDescId).textContent = d.desc;
+      resetRing(edition);
+    });
+  });
+}
+wireDomainGrid('domainGrid', domainData, 'selTitle', 'selDesc', 'citizen');
+wireDomainGrid('proDomainGrid', proDomainData, 'proSelTitle', 'proSelDesc', 'pro');
+
+// -- Edition tab switching --
+function selectEdition(i){
+  document.querySelectorAll('.protocol-row').forEach((r,idx)=>r.classList.toggle('active', idx===i));
+  document.getElementById('citizen-flow').style.display = (i===0) ? 'block' : 'none';
+  document.getElementById('pro-flow').style.display      = (i===1) ? 'block' : 'none';
+  document.getElementById('terms-flow').style.display    = (i===2) ? 'block' : 'none';
+
+  const target = i===0 ? 'citizen-flow' : (i===1 ? 'pro-flow' : 'terms-flow');
+  document.getElementById(target).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// -- Scan engine, parameterized by edition ('citizen' or 'pro') --
+const ids = {
+  citizen: { ring:'ring', state:'ringState', sub:'ringSub', cancel:'cancelBtn', fusion:'fusionStatus', resultBox:'resultBox', resultTitle:'resultTitle', resultDesc:'resultDesc' },
+  pro:     { ring:'proRing', state:'proRingState', sub:'proRingSub', cancel:'proCancelBtn', fusion:'proFusionStatus', resultBox:'proResultBox', resultTitle:'proResultTitle', resultDesc:'proResultDesc' }
+};
+const scanTimers = { citizen:null, pro:null };
+
+function startScan(edition){
+  edition = edition || 'citizen';
+  const el = ids[edition];
+  const ring = document.getElementById(el.ring);
+  const state = document.getElementById(el.state);
+  const sub = document.getElementById(el.sub);
+  const cancelBtn = document.getElementById(el.cancel);
+  const fusionStatus = document.getElementById(el.fusion);
+
+  ring.className = 'ring scanning';
+  state.textContent = 'SCANNING';
+  sub.textContent = 'Fusing sensor input…';
+  fusionStatus.textContent = 'ACTIVE';
+  fusionStatus.className = 'status-val ready';
+  cancelBtn.classList.add('enabled');
+  cancelBtn.style.cursor = 'pointer';
+
+  clearTimeout(scanTimers[edition]);
+  scanTimers[edition] = setTimeout(()=>{
+    const outcomes = ['normal','normal','caution','elevated','outside'];
+    const outcome = outcomes[Math.floor(Math.random()*outcomes.length)];
+    showResult(outcome, edition);
+  }, 2200);
+}
+
+function cancelRun(edition){
+  edition = edition || 'citizen';
+  clearTimeout(scanTimers[edition]);
+  resetRing(edition);
+}
+
+function resetRing(edition){
+  edition = edition || 'citizen';
+  const el = ids[edition];
+  const ring = document.getElementById(el.ring);
+  const state = document.getElementById(el.state);
+  const sub = document.getElementById(el.sub);
+  const cancelBtn = document.getElementById(el.cancel);
+  const fusionStatus = document.getElementById(el.fusion);
+
+  ring.className = 'ring';
+  state.textContent = 'READY';
+  sub.textContent = 'Awaiting input';
+  fusionStatus.textContent = 'STANDBY';
+  fusionStatus.className = 'status-val standby';
+  cancelBtn.classList.remove('enabled');
+  cancelBtn.style.cursor = 'not-allowed';
+}
+
+function showResult(key, edition){
+  edition = edition || 'citizen';
+  const el = ids[edition];
+  const ring = document.getElementById(el.ring);
+  const state = document.getElementById(el.state);
+  const sub = document.getElementById(el.sub);
+  const cancelBtn = document.getElementById(el.cancel);
+  const fusionStatus = document.getElementById(el.fusion);
+  const d = stateData[key];
+
+  ring.className = 'ring ' + key;
+  state.textContent = d.label.split(' ')[0];
+  sub.textContent = 'Run complete';
+  fusionStatus.textContent = 'COMPLETE';
+  cancelBtn.classList.remove('enabled');
+  cancelBtn.style.cursor = 'not-allowed';
+
+  previewState(key, edition);
+  document.getElementById(el.resultBox).scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function previewState(key, edition){
+  edition = edition || 'citizen';
+  const el = ids[edition];
+  const scope = edition === 'pro' ? '#pro-flow' : '#citizen-flow';
+  document.querySelectorAll(scope + ' .pill').forEach(p=>p.classList.toggle('selected', p.dataset.state===key));
+  const d = stateData[key];
+  document.getElementById(el.resultTitle).textContent = d.label;
+  document.getElementById(el.resultDesc).textContent = d.desc;
+}
+
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
