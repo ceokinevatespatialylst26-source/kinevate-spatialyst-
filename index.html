@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINEVATE Analyzer Elite Pro</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d0c;
+    --panel:#121614;
+    --panel-2:#161b19;
+    --border:rgba(255,255,255,0.09);
+    --text:#eef2ef;
+    --muted:#9aa6a0;
+    --accent:#5fe6a8;
+    --accent-dim:rgba(95,230,168,0.14);
+    --danger:#e6a45f;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    line-height:1.15;
+    margin:0 0 0.5em 0;
+    font-weight:600;
+  }
+  a{color:inherit;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+
+  /* Header */
+  header{
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;
+    background:rgba(10,13,12,0.92);
+    backdrop-filter:blur(8px);
+    z-index:10;
+  }
+  .header-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 24px;
+    max-width:var(--maxw);
+    margin:0 auto;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{font-weight:600;font-size:1.05rem;}
+  .brand span{color:var(--accent);}
+  nav{display:flex;gap:22px;flex-wrap:wrap;}
+  nav a{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:0.92rem;
+  }
+  nav a:hover{color:var(--text);}
+
+  /* Hero */
+  .hero{padding:64px 0 40px;}
+  .eyebrow{
+    color:var(--accent);
+    font-size:0.85rem;
+    margin-bottom:18px;
+  }
+  .hero h1{font-size:2.6rem;max-width:11ch;}
+  .hero p.lead{
+    color:var(--muted);
+    max-width:56ch;
+    font-size:1.08rem;
+    margin-bottom:24px;
+  }
+  .disclaimer{
+    border-left:2px solid var(--accent);
+    padding:14px 18px;
+    background:var(--panel);
+    color:var(--muted);
+    font-size:0.92rem;
+    max-width:60ch;
+    margin-bottom:32px;
+    border-radius:0 6px 6px 0;
+  }
+  .btn-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{
+    padding:13px 22px;
+    border-radius:8px;
+    font-size:0.95rem;
+    font-weight:500;
+    text-decoration:none;
+    display:inline-block;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--accent);color:#06110c;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{border-color:var(--border);color:var(--text);background:transparent;}
+  .btn-ghost:hover{border-color:var(--accent);}
+
+  /* Sections */
+  section{padding:56px 0;border-top:1px solid var(--border);}
+  section > .wrap > h2{font-size:1.7rem;margin-bottom:10px;}
+  section > .wrap > p.section-lead{color:var(--muted);max-width:60ch;margin-bottom:32px;}
+
+  /* Sensor grid */
+  .sensor-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px;
+  }
+  .sensor-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+  }
+  .sensor-icon{
+    width:34px;height:34px;
+    border-radius:8px;
+    background:var(--accent-dim);
+    color:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;
+    margin-bottom:14px;
+  }
+  .sensor-card h3{font-size:1.05rem;margin-bottom:6px;}
+  .sensor-card p{color:var(--muted);font-size:0.88rem;margin:0;}
+
+  /* Protocol preview */
+  .device{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:26px;
+  }
+  .device-top{
+    display:flex;justify-content:space-between;align-items:baseline;
+    flex-wrap:wrap;gap:8px;
+    margin-bottom:18px;
+    color:var(--muted);
+    font-size:0.82rem;
+  }
+  .tab-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+  .tab{
+    padding:7px 14px;border-radius:999px;
+    border:1px solid var(--border);
+    font-size:0.85rem;color:var(--muted);
+    background:var(--panel-2);
+  }
+  .tab.active{border-color:var(--accent);color:var(--accent);}
+  .status-lines{
+    display:grid;gap:8px;margin-bottom:22px;
+    font-size:0.88rem;color:var(--muted);
+  }
+  .status-lines b{color:var(--text);font-weight:500;}
+  .state-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .state-chip{
+    padding:9px 16px;border-radius:8px;
+    font-size:0.85rem;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--muted);
+  }
+  .device-footnote{color:var(--muted);font-size:0.85rem;}
+
+  /* Safety list */
+  .safety-note{
+    color:var(--muted);
+    max-width:64ch;
+    margin-bottom:20px;
+  }
+  .state-def{
+    display:grid;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .state-def-row{
+    display:grid;
+    grid-template-columns:160px 1fr;
+    gap:14px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:14px;
+    font-size:0.92rem;
+  }
+  .state-def-row b{color:var(--accent);font-weight:500;}
+  .state-def-row span{color:var(--muted);}
+
+  /* Form */
+  form{display:grid;gap:16px;max-width:520px;}
+  label{font-size:0.88rem;color:var(--muted);display:block;margin-bottom:6px;}
+  input[type=text],input[type=email],textarea{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:11px 13px;
+    color:var(--text);
+    font-family:inherit;
+    font-size:0.94rem;
+  }
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .field-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .checkbox-item{
+    display:flex;align-items:center;gap:7px;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:0.85rem;
+    color:var(--muted);
+  }
+  .checkbox-item input{accent-color:var(--accent);}
+
+  /* Legal */
+  .legal h3{font-size:1.15rem;margin-top:28px;}
+  .legal p, .legal li{color:var(--muted);font-size:0.92rem;}
+  .legal .updated{color:var(--muted);font-size:0.85rem;margin-bottom:20px;}
+
+  footer{
+    border-top:1px solid var(--border);
+    padding:28px 0 48px;
+    color:var(--muted);
+    font-size:0.85rem;
+    text-align:center;
+  }
+  footer a{color:var(--muted);text-decoration:underline;}
+
+  @media (max-width:600px){
+    .hero h1{font-size:2rem;}
+    .state-def-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">KINEVATE · <span>Analyzer Elite Pro</span></div>
+    <nav>
+      <a href="#product">Product</a>
+      <a href="#demo">Demo</a>
+      <a href="#waitlist">Waitlist</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#terms">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="eyebrow mono">KINEVATE SPATIALYST INC. &middot; SENSOR-FUSION PROTOTYPE &middot; FIELD/INDUSTRIAL EDITION</div>
+  <h1>Early warning for the field.</h1>
+  <p class="lead">KINEVATE Analyzer Elite Pro screens air, water, surfaces, and land conditions to help protect field, industrial, and agricultural operations — built for firefighters, EMTs, and government agencies working outside controlled environments.</p>
+  <div class="disclaimer">This is an early-warning screening tool, not a lab-confirmed identification device. Results indicate a screening signal only and are not a substitute for certified laboratory testing or medical diagnosis.</div>
+  <div class="btn-row">
+    <a href="#waitlist" class="btn btn-primary">Join the waitlist</a>
+    <a href="#product" class="btn btn-ghost">See sensor domains</a>
+  </div>
+</div>
+
+<section id="product">
+  <div class="wrap">
+    <h2>Four sensor domains, one fused signal</h2>
+    <p class="section-lead">Multiple sensing modes are reconciled in real time to produce a single screening result across each domain below.</p>
+    <div class="sensor-grid">
+      <div class="sensor-card">
+        <div class="sensor-icon">&#9678;</div>
+        <h3>Air</h3>
+        <p>General air quality indicators</p>
+      </div>
+      <div class="sensor-card">
+        <div class="sensor-icon">&#8776;</div>
+        <h3>Water</h3>
+        <p>Clarity &middot; chemistry &middot; load</p>
+      </div>
+      <div class="sensor-card">
+        <div class="sensor-icon">&#9632;</div>
+        <h3>Surface</h3>
+        <p>Residue &middot; contact area</p>
+      </div>
+      <div class="sensor-card">
+        <div class="sensor-icon">&#10022;</div>
+        <h3>Land / Soil</h3>
+        <p>Moisture &middot; stress markers</p>
+      </div>
+      <div class="sensor-card">
+        <div class="sensor-icon">&#10038;</div>
+        <h3>Environment</h3>
+        <p>Multi-domain snapshot</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Screening protocol preview</h2>
+    <p class="section-lead">A mock run of the on-device experience. No real sensor data — this is a UI/UX preview only.</p>
+
+    <div class="device">
+      <div class="device-top">
+        <span class="mono">PROTOCOL P-01 &middot; MOCK DEVICE</span>
+        <span class="mono">RUN P-1042</span>
+      </div>
+      <div class="tab-row">
+        <span class="tab active">Air</span>
+        <span class="tab">Water</span>
+        <span class="tab">Surface</span>
+        <span class="tab">Land / Soil</span>
+        <span class="tab">Environment</span>
+      </div>
+      <div class="status-lines">
+        <div>Sensor handshake: <b>READY</b></div>
+        <div>Fusion model: <b>STANDBY</b></div>
+        <div>Validation envelope: <b>SUPPORTED</b></div>
+      </div>
+      <div class="btn-row" style="margin-bottom:22px;">
+        <a href="#" class="btn btn-primary" onclick="return false;">Start screening scan &rarr;</a>
+      </div>
+      <div class="state-row">
+        <span class="state-chip">Normal</span>
+        <span class="state-chip">Caution / Retest</span>
+        <span class="state-chip">Elevated reading</span>
+        <span class="state-chip">Outside range</span>
+      </div>
+      <p class="device-footnote">Run a mock scan or select a state above to preview the result experience.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Safety boundaries &amp; language</h2>
+    <p class="section-lead">Four-state output language, used consistently across every screening domain.</p>
+    <p class="safety-note">Results are screening signals, not pathogen or substance identification. Analyzer Elite Pro is a field screening aid intended to flag conditions that warrant further attention. It does not diagnose, and it does not replace certified laboratory confirmation.</p>
+
+    <div class="state-def">
+      <div class="state-def-row">
+        <b>Normal</b>
+        <span>No elevated signal detected in this domain during this run.</span>
+      </div>
+      <div class="state-def-row">
+        <b>Caution / Retest</b>
+        <span>An ambiguous signal; a repeat scan or secondary check is recommended.</span>
+      </div>
+      <div class="state-def-row">
+        <b>Elevated reading</b>
+        <span>A signal outside expected baseline; escalate per your agency's protocol.</span>
+      </div>
+      <div class="state-def-row">
+        <b>Outside range</b>
+        <span>The reading falls outside the device's validated detection envelope.</span>
+      </div>
+    </div>
+    <p class="safety-note">Genetic or molecular pathogen confirmation is performed off-device by a certified lab or companion system, and is reported separately from the on-device screening result.</p>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap">
+    <h2>Enterprise inquiry &amp; waitlist</h2>
+    <p class="section-lead">Tell us about your environment and constraints — we'll follow up with a technical briefing scoped to your use case.</p>
+
+    <!-- Replace YOUR_ACCESS_KEY_HERE with your real Web3Forms access key before this form will send submissions -->
+    <form action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="71ceb037-f1ea-4829-bbd4-0bd14061dc7b">
+      <!-- Honeypot: invisible to real visitors, bots often fill it in and get blocked -->
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+      <div>
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div>
+        <label for="company">Company / agency</label>
+        <input type="text" id="company" name="company" required>
+      </div>
+      <div>
+        <label for="email">Work email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div>
+        <label>Deployment context</label>
+        <div class="field-group">
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Fire / EMS / public safety"> Fire / EMS / public safety</label>
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Law enforcement / government"> Law enforcement / government</label>
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Industrial / field sensing"> Industrial / field sensing</label>
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Agriculture"> Agriculture</label>
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Research / R&D"> Research / R&amp;D</label>
+          <label class="checkbox-item"><input type="checkbox" name="context" value="Other"> Other</label>
+        </div>
+      </div>
+      <div>
+        <label for="details">Project details</label>
+        <textarea id="details" name="details" rows="4"></textarea>
+      </div>
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary">Submit inquiry</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="privacy" class="legal">
+  <div class="wrap">
+    <h2>Privacy Policy</h2>
+    <p class="updated">Draft — pending legal review. Last updated: prototype stage, 2026.</p>
+
+    <h3>What we collect</h3>
+    <p>When you submit the waitlist / enterprise inquiry form, we collect the name, company or agency, work email address, deployment context, and any project details you choose to enter. We do not collect this information through any other means on this site, and we do not use tracking cookies or analytics scripts.</p>
+
+    <h3>How we use it</h3>
+    <p>Submitted information is used solely to respond to your inquiry and to follow up with a technical briefing scoped to your stated use case. We do not sell, rent, or share your information with third parties for marketing purposes.</p>
+
+    <h3>How it's stored</h3>
+    <p>Form submissions are delivered via a third-party form service (Web3Forms) directly to KINEVATE SPATIALYST INC.'s inbox. We do not maintain a separate marketing database at this time.</p>
+
+    <h3>Your rights</h3>
+    <p>You may request that we delete any information you've submitted by contacting us at the email address below. We will honor deletion requests within a reasonable time.</p>
+
+    <h3>Contact</h3>
+    <p>Questions about this policy: kinevatespatialyst@outlook.com</p>
+  </div>
+</section>
+
+<section id="terms" class="legal">
+  <div class="wrap">
+    <h2>Terms of Service</h2>
+    <p class="updated">Draft — pending legal review. Last updated: prototype stage, 2026.</p>
+
+    <h3>Prototype status</h3>
+    <p>Analyzer Elite Pro is currently in prototype / pre-production development. Specifications, pricing, availability, and features described on this site are subject to change without notice and are not a binding offer of sale.</p>
+
+    <h3>No warranty</h3>
+    <p>This site and the information on it are provided "as is," without warranty of any kind, express or implied, including but not limited to fitness for a particular purpose.</p>
+
+    <h3>Not a diagnostic or lab-confirmation device</h3>
+    <p>Analyzer Elite Pro is a field screening aid. It does not diagnose medical conditions and does not replace certified laboratory testing. Any decision made in reliance on a screening result is the sole responsibility of the operator and their agency's protocols.</p>
+
+    <h3>Intellectual property</h3>
+    <p>All content on this site, including product designs, sensor architecture descriptions, and branding, is the property of KINEVATE SPATIALYST INC. and may not be reproduced without permission.</p>
+
+    <h3>Contact</h3>
+    <p>Questions about these terms: kinevatespatialyst@outlook.com</p>
+  </div>
+</section>
+
+<footer>
+  KINEVATE Analyzer Elite Pro &middot; Prototype v0.3 &middot; Screening aid, not a confirmed identification<br>
+  &copy; 2026 KINEVATE SPATIALYST INC. &middot; <a href="#privacy">Privacy</a> &middot; <a href="#terms">Terms</a>
+</footer>
+
+</body>
+</html>
