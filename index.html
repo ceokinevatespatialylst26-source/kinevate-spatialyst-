@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kinevate Spatialyst</title>
+<meta name="description" content="Kinevate Spatialyst Inc. builds safety, security, and protection technology, software, and spatial consultancy services. Home of Analyzer Elite Pro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,500..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Michroma&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ground:#070B10;
+  --ground-2:#0B1118;
+  --panel:#0F171F;
+  --line:#1D2A35;
+  --line-2:#2A3A47;
+  --gold:#E3B45C;
+  --gold-hi:#F4D08A;
+  --gold-lo:#A87B34;
+  --gold-wash:rgba(227,180,92,.10);
+  --cyan:#62D2CD;
+  --text:#EEF2F4;
+  --dim:#93A3AE;
+  --faint:#5C6C78;
+  --normal:#6FCF97;
+  --caution:#E3B45C;
+  --elevated:#E07A5F;
+  --outside:#7C8C98;
+  --display:'Archivo', 'Arial Narrow', system-ui, sans-serif;
+  --body:'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --mark:'Michroma', 'Archivo', system-ui, sans-serif;
+  --gutter:clamp(16px, 4vw, 40px);
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; background:var(--ground)}
+body{
+  margin:0; background:var(--ground); color:var(--text);
+  font-family:var(--body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display); font-stretch:118%; margin:0; line-height:1.02; text-wrap:balance; letter-spacing:-.01em}
+p{margin:0}
+.label{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold)}
+.shell{max-width:var(--max); margin:0 auto; padding-inline:var(--gutter)}
+:focus-visible{outline:2px solid var(--gold); outline-offset:3px; border-radius:4px}
+
+/* progress bar */
+#progress{position:fixed; top:0; left:0; height:2px; width:0; z-index:60;
+  background:linear-gradient(90deg,var(--gold-lo),var(--gold-hi)); box-shadow:0 0 12px var(--gold)}
+
+/* nav */
+.nav{position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
+  background:rgba(7,11,16,.72); backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-bottom:1px solid rgba(42,58,71,.6)}
+.nav .shell{display:flex; align-items:center; justify-content:space-between; gap:16px; height:68px}
+.brand{display:flex; align-items:center; gap:12px; text-decoration:none}
+.brand svg{width:34px; height:34px; flex:none}
+.wordmark{display:flex; flex-direction:column; line-height:1}
+.wordmark b{font-family:var(--mark); font-weight:400; font-size:.98rem; letter-spacing:.22em}
+.wordmark span{font-family:var(--mono); font-size:.58rem; letter-spacing:.42em; color:var(--gold); margin-top:5px}
+.nav-links{display:flex; gap:28px; align-items:center}
+.nav-links a{text-decoration:none; font-size:.88rem; color:var(--dim); transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{padding:9px 16px; border:1px solid var(--gold); border-radius:999px; color:var(--gold)!important; font-weight:600}
+.nav-cta:hover{background:var(--gold); color:var(--ground)!important}
+@media (max-width:760px){ .nav-links a:not(.nav-cta){display:none} }
+
+/* hero */
+.hero{position:relative; overflow:hidden; border-bottom:1px solid var(--line); isolation:isolate}
+#field{position:absolute; inset:0; width:100%; height:100%; z-index:-1; display:block}
+.hero::after{content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(120% 80% at 20% 30%, transparent 30%, var(--ground) 95%),
+             linear-gradient(180deg, transparent 60%, var(--ground))}
+.hero .shell{padding-block:clamp(72px,12vw,140px) clamp(64px,9vw,110px)}
+.status-chip{display:inline-flex; align-items:center; gap:10px; padding:7px 14px 7px 10px;
+  border:1px solid var(--line-2); border-radius:999px; background:rgba(15,23,31,.7);
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
+.status-chip i{width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 0 rgba(227,180,92,.6); animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(227,180,92,.55)}80%,100%{box-shadow:0 0 0 10px rgba(227,180,92,0)}}
+.hero h1{font-size:clamp(2.7rem, 8.4vw, 6.4rem); font-weight:800; margin:28px 0 26px; max-width:12ch}
+.hero h1 em{font-style:normal; background:linear-gradient(100deg,var(--gold-hi),var(--gold) 45%,var(--gold-lo));
+  -webkit-background-clip:text; background-clip:text; color:transparent}
+.hero .lede{font-size:clamp(1.05rem,1.6vw,1.25rem); color:#C5D0D7; max-width:52ch}
+.hero-actions{display:flex; flex-wrap:wrap; gap:14px; margin-top:36px}
+.btn{position:relative; display:inline-flex; align-items:center; gap:10px; padding:16px 26px; border-radius:999px;
+  font-family:var(--body); font-weight:600; font-size:1rem; text-decoration:none; cursor:pointer; border:1px solid transparent;
+  transition:transform .2s, box-shadow .25s, background .2s, color .2s}
+.btn-gold{background:linear-gradient(180deg,var(--gold-hi),var(--gold)); color:#1B1204; box-shadow:0 10px 30px -10px rgba(227,180,92,.6)}
+.btn-gold:hover{transform:translateY(-2px); box-shadow:0 18px 40px -12px rgba(227,180,92,.75)}
+.btn-ghost{background:transparent; color:var(--text); border-color:var(--line-2)}
+.btn-ghost:hover{border-color:var(--gold); color:var(--gold)}
+.btn .arrow{transition:transform .2s}
+.btn:hover .arrow{transform:translateX(4px)}
+.hero-meta{display:flex; flex-wrap:wrap; gap:clamp(20px,5vw,56px); margin-top:clamp(48px,7vw,80px); padding-top:24px; border-top:1px solid rgba(42,58,71,.7)}
+.hero-meta div{display:flex; flex-direction:column; gap:4px}
+.hero-meta b{font-family:var(--display); font-stretch:125%; font-size:1.7rem; font-weight:700}
+.hero-meta span{font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim)}
+
+/* load sequence */
+.rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+.rise.d1{animation-delay:.08s}.rise.d2{animation-delay:.18s}.rise.d3{animation-delay:.3s}.rise.d4{animation-delay:.42s}
+@keyframes rise{from{transform:translateY(18px); filter:blur(4px)} to{transform:none; filter:none}}
+
+/* section heads */
+section.block{padding-block:clamp(72px,10vw,128px); border-bottom:1px solid var(--line)}
+.head{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px 48px; align-items:end; margin-bottom:clamp(36px,5vw,60px)}
+.head h2{font-size:clamp(2rem,4.6vw,3.6rem); font-weight:750; margin-top:14px}
+.head p{color:var(--dim); max-width:48ch}
+@media (max-width:820px){ .head{grid-template-columns:1fr} }
+
+/* console */
+.console{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); border:1px solid var(--line-2); border-radius:24px;
+  background:linear-gradient(180deg,var(--panel),var(--ground-2)); overflow:hidden; box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+@media (max-width:880px){ .console{grid-template-columns:1fr} }
+.console-left{padding:clamp(22px,3.4vw,40px); border-right:1px solid var(--line); display:flex; flex-direction:column; gap:22px}
+@media (max-width:880px){ .console-left{border-right:0; border-bottom:1px solid var(--line)} }
+.console-bar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+.sim{font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold);
+  border:1px dashed var(--gold-lo); padding:5px 10px; border-radius:6px}
+.envs{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px}
+.env{position:relative; text-align:left; padding:16px; border-radius:14px; border:1px solid var(--line); background:var(--ground-2);
+  color:var(--text); cursor:pointer; font:inherit; transition:border-color .2s, background .2s, transform .2s; overflow:hidden}
+.env:hover{transform:translateY(-2px); border-color:var(--line-2)}
+.env[aria-pressed="true"]{border-color:var(--gold); background:var(--gold-wash)}
+.env svg{width:26px; height:26px; stroke:var(--gold); fill:none; stroke-width:1.5; margin-bottom:12px; display:block}
+.env b{display:block; font-family:var(--display); font-stretch:115%; font-size:1.05rem}
+.env span{display:block; font-size:.8rem; color:var(--dim); margin-top:2px}
+.console-copy h3{font-size:1.5rem; font-stretch:112%}
+.console-copy p{color:var(--dim); margin-top:6px; font-size:.95rem}
+.run{width:100%; justify-content:center}
+.run[disabled]{opacity:.55; cursor:progress; transform:none}
+
+.console-right{padding:clamp(22px,3.4vw,40px); display:flex; flex-direction:column; align-items:center; gap:24px; position:relative}
+.gauge{position:relative; width:min(300px,78vw); aspect-ratio:1; max-width:100%}
+.gauge svg{width:100%; height:100%; display:block}
+.gauge-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:4px}
+.gauge-state{font-family:var(--display); font-stretch:125%; font-weight:800; font-size:clamp(1.5rem,4.6vw,2rem); letter-spacing:.02em}
+.gauge-sub{font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim)}
+.gauge-num{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:.9rem; color:var(--faint)}
+.readout{width:100%; display:grid; gap:8px}
+.readout-row{display:flex; justify-content:space-between; gap:12px; padding:11px 14px; border:1px solid var(--line); border-radius:10px;
+  font-family:var(--mono); font-size:.76rem; letter-spacing:.06em; color:var(--dim); background:rgba(7,11,16,.5)}
+.readout-row b{font-weight:500; color:var(--text)}
+.readout-row b.ok{color:var(--normal)} .readout-row b.wait{color:var(--gold)}
+.verdict{width:100%; padding:16px 18px; border-radius:12px; border:1px solid var(--line); border-left-width:4px; background:rgba(7,11,16,.5)}
+.verdict b{font-family:var(--display); font-stretch:115%; font-size:1.02rem}
+.verdict p{color:var(--dim); font-size:.88rem; margin-top:4px}
+
+/* audiences */
+.roles{border-top:1px solid var(--line)}
+.role{display:grid; grid-template-columns:70px minmax(0,1fr) minmax(0,1.1fr); gap:20px; align-items:center;
+  padding:26px 8px; border-bottom:1px solid var(--line); position:relative; transition:padding .3s}
+.role::before{content:""; position:absolute; inset:0; background:linear-gradient(90deg,var(--gold-wash),transparent 70%); opacity:0; transition:opacity .3s; pointer-events:none}
+.role:hover::before{opacity:1}
+.role:hover{padding-left:20px}
+.role .code{font-family:var(--mono); font-size:.75rem; color:var(--gold); letter-spacing:.1em}
+.role h3{font-size:clamp(1.4rem,3vw,2.2rem); font-weight:700}
+.role p{color:var(--dim); font-size:.95rem}
+@media (max-width:720px){ .role{grid-template-columns:1fr; gap:6px} .role:hover{padding-left:8px} }
+
+/* four states */
+.states{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+@media (max-width:900px){ .states{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:480px){ .states{grid-template-columns:1fr} }
+.state{--c:var(--normal); position:relative; padding:26px 22px 24px; border:1px solid var(--line); border-radius:18px; background:var(--panel); overflow:hidden;
+  transition:transform .25s, border-color .25s}
+.state:hover{transform:translateY(-4px); border-color:var(--c)}
+.state .spot{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--c) 18%, transparent), transparent 70%)}
+.state:hover .spot{opacity:1}
+.state .dot{width:14px; height:14px; border-radius:50%; background:var(--c); box-shadow:0 0 18px var(--c)}
+.state h3{font-size:1.25rem; font-stretch:112%; margin:22px 0 10px; color:var(--c)}
+.state p{color:var(--dim); font-size:.92rem}
+.state.caution{--c:var(--caution)} .state.elevated{--c:var(--elevated)} .state.outside{--c:var(--outside)}
+.states-note{margin-top:22px; color:var(--dim); font-size:.92rem; max-width:70ch}
+
+/* build targets */
+.targets{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid var(--line); border-radius:22px; overflow:hidden}
+@media (max-width:820px){ .targets{grid-template-columns:1fr} }
+.target{padding:clamp(24px,3vw,36px); border-right:1px solid var(--line); background:var(--panel)}
+.target:last-child{border-right:0}
+@media (max-width:820px){ .target{border-right:0; border-bottom:1px solid var(--line)} .target:last-child{border-bottom:0} }
+.target .big{font-family:var(--display); font-stretch:125%; font-weight:800; font-size:clamp(2rem,4vw,2.8rem); color:var(--gold); line-height:1}
+.target h3{font-size:1.1rem; font-stretch:110%; margin:16px 0 8px}
+.target p{color:var(--dim); font-size:.92rem}
+.targets-note{margin-top:14px; font-family:var(--mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint)}
+
+/* company */
+.company{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:clamp(32px,6vw,80px); align-items:start}
+@media (max-width:880px){ .company{grid-template-columns:1fr} }
+.mission{font-family:var(--display); font-stretch:112%; font-weight:600; font-size:clamp(1.35rem,2.6vw,2rem); line-height:1.25; margin-top:18px}
+.mission span{color:var(--gold)}
+.company-body{color:var(--dim); margin-top:22px; max-width:56ch}
+.divisions{display:grid; gap:12px}
+.division{padding:22px 24px; border:1px solid var(--line); border-radius:16px; background:var(--panel); transition:border-color .2s}
+.division:hover{border-color:var(--gold-lo)}
+.division .label{color:var(--faint)}
+.division h3{font-size:1.15rem; font-stretch:112%; margin:8px 0 6px}
+.division p{color:var(--dim); font-size:.92rem}
+.division.lead{border-color:var(--gold-lo); background:linear-gradient(180deg,var(--gold-wash),var(--panel))}
+.division.lead .label{color:var(--gold)}
+
+/* waitlist */
+.wait{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,6vw,80px); align-items:center}
+@media (max-width:880px){ .wait{grid-template-columns:1fr} }
+.wait h2{font-size:clamp(2.2rem,5vw,4rem); font-weight:800}
+.wait-copy p{color:var(--dim); margin-top:18px; max-width:46ch}
+.form{padding:clamp(22px,3vw,34px); border:1px solid var(--line-2); border-radius:22px; background:var(--panel); display:grid; gap:16px}
+.field{display:grid; gap:6px}
+.field label{font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--dim)}
+.field input,.field select{width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--line-2); background:var(--ground);
+  color:var(--text); font:inherit; font-size:1rem; transition:border-color .2s}
+.field input:focus,.field select:focus{outline:none; border-color:var(--gold)}
+.form-msg{font-size:.9rem; color:var(--dim); min-height:1.4em}
+.form-msg.ok{color:var(--normal)}
+.email-line{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:24px}
+.email-line code{font-family:var(--mono); font-size:.9rem; padding:8px 12px; border:1px solid var(--line-2); border-radius:8px; user-select:all; color:var(--text)}
+.copy{font:inherit; font-size:.82rem; padding:8px 12px; border-radius:8px; border:1px solid var(--line-2); background:transparent; color:var(--gold); cursor:pointer}
+.copy:hover{border-color:var(--gold)}
+
+/* disclosure + footer */
+.disclosure{padding-block:48px; border-bottom:1px solid var(--line)}
+.disclosure p{color:var(--faint); font-size:.85rem; max-width:90ch}
+.disclosure p + p{margin-top:10px}
+footer .shell{padding-block:40px 56px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; align-items:center}
+footer small{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--faint)}
+
+/* pillars */
+.pillars{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+@media (max-width:980px){ .pillars{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:520px){ .pillars{grid-template-columns:1fr} }
+.pillar{position:relative; padding:28px 24px; border:1px solid var(--line); border-radius:18px; background:var(--panel); overflow:hidden; transition:transform .25s, border-color .25s}
+.pillar:hover{transform:translateY(-4px); border-color:var(--gold-lo)}
+.pillar .spot{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
+  background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(227,180,92,.14), transparent 70%)}
+.pillar:hover .spot{opacity:1}
+.pillar svg{width:34px; height:34px; stroke:var(--gold); fill:none; stroke-width:1.4; display:block}
+.pillar h3{font-size:1.2rem; font-stretch:112%; margin:22px 0 10px}
+.pillar p{color:var(--dim); font-size:.92rem}
+.pipeline{margin-top:18px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:18px 22px; border:1px dashed var(--line-2); border-radius:14px; color:var(--dim); font-size:.92rem}
+.pipeline .lock{flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--gold-lo)}
+.pipeline .lock svg{width:16px; height:16px; stroke:var(--gold); fill:none; stroke-width:1.8}
+.pipeline p{flex:1 1 260px}
+
+/* commitments */
+.commit{display:grid; gap:0; border-top:1px solid var(--line); margin-top:28px}
+.commit div{display:grid; grid-template-columns:28px minmax(0,1fr); gap:14px; padding:18px 0; border-bottom:1px solid var(--line)}
+.commit svg{width:20px; height:20px; stroke:var(--gold); fill:none; stroke-width:2; margin-top:3px}
+.commit b{display:block; font-family:var(--display); font-stretch:112%; font-size:1.05rem}
+.commit span{color:var(--dim); font-size:.92rem}
+
+/* consent */
+.consent{display:grid; grid-template-columns:20px minmax(0,1fr); gap:10px; align-items:start; font-size:.85rem; color:var(--dim)}
+.consent input{width:18px; height:18px; margin:2px 0 0; accent-color:var(--gold)}
+.consent a{color:var(--gold)}
+
+/* legal */
+.legal details{border:1px solid var(--line); border-radius:14px; background:var(--panel); margin-bottom:10px}
+.legal summary{cursor:pointer; list-style:none; padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px;
+  font-family:var(--display); font-stretch:112%; font-weight:600; font-size:1.08rem}
+.legal summary::-webkit-details-marker{display:none}
+.legal summary::after{content:"+"; font-family:var(--mono); color:var(--gold); font-size:1.2rem; transition:transform .2s}
+.legal details[open] summary::after{transform:rotate(45deg)}
+.legal .doc{padding:0 22px 24px; color:var(--dim); font-size:.9rem; max-width:84ch}
+.legal .doc h4{font-family:var(--body); font-size:.9rem; font-weight:600; color:var(--text); margin:18px 0 4px}
+.legal .doc p + p{margin-top:8px}
+.legal .eff{font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin-bottom:6px}
+.footer-links{display:flex; flex-wrap:wrap; gap:18px}
+.footer-links a{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--dim); text-decoration:none}
+.footer-links a:hover{color:var(--gold)}
+.tm{flex-basis:100%; font-size:.72rem; color:var(--faint); font-family:var(--mono); letter-spacing:.04em}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important; scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progress" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="shell">
+    <a class="brand" href="#top" aria-label="Kinevate Spatialyst home">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F4D08A"/><stop offset=".55" stop-color="#E3B45C"/><stop offset="1" stop-color="#A87B34"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 3 L61 32 L32 61 L3 32 Z" fill="none" stroke="url(#kg)" stroke-width="2.4"/>
+        <path d="M24 18 V46" stroke="url(#kg)" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M42 18 L29 32 L42 46" fill="none" stroke="url(#kg)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="45" cy="32" r="3" fill="#62D2CD"/>
+      </svg>
+      <span class="wordmark"><b>KINEVATE</b><span>SPATIALYST</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#what-we-do">What we do</a>
+      <a href="#console">Analyzer Elite Pro</a>
+      <a href="#company">Company</a>
+      <a class="nav-cta" href="#waitlist">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-label="Kinevate Spatialyst">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <div class="shell">
+      <span class="status-chip rise"><i></i>Safety · Security · Safeguards · Protection</span>
+      <h1 class="rise d1">Technology that protects the <em>living world.</em></h1>
+      <p class="lede rise d2">Kinevate Spatialyst Inc. builds protection products, software, and spatial intelligence that help safeguard people, animals, plants, agriculture, and the environment from harmful and toxic pollution in air, land, water, surfaces, and the food supply.</p>
+      <div class="hero-actions rise d3">
+        <a class="btn btn-gold" href="#what-we-do">Explore what we do <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="#console">Meet Analyzer Elite Pro</a>
+      </div>
+      <div class="hero-meta rise d4">
+        <div><b>4</b><span>Lines of business</span></div>
+        <div><b>3</b><span>Service divisions</span></div>
+        <div><b>1</b><span>Flagship device</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="what-we-do" aria-labelledby="wwd-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">What we do</p>
+          <h2 id="wwd-h">One company. Four ways we protect.</h2>
+        </div>
+        <p>Every product and service we offer serves the same purpose: see risk earlier, document it clearly, and help people act before harm is done.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar"><div class="spot"></div>
+          <svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z"/><path d="M11 16l3.5 3.5L21 13"/></svg>
+          <h3>Protection products</h3><p>Field devices that give responders and industrial teams an early warning, led by Analyzer Elite Pro.</p></article>
+        <article class="pillar"><div class="spot"></div>
+          <svg viewBox="0 0 32 32"><rect x="4" y="6" width="24" height="18" rx="2"/><path d="M12 13l-3 3 3 3M20 13l3 3-3 3M17 12l-2 8"/></svg>
+          <h3>Software development</h3><p>Custom software, dashboards, and AI tools that turn field data into clear decisions.</p></article>
+        <article class="pillar"><div class="spot"></div>
+          <svg viewBox="0 0 32 32"><path d="M4 10l12-6 12 6-12 6z"/><path d="M4 16l12 6 12-6M4 22l12 6 12-6"/></svg>
+          <h3>Spatial consultancy</h3><p>3D site capture, digital floor plans, egress maps, and site documentation, delivered remotely.</p></article>
+        <article class="pillar"><div class="spot"></div>
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="5"/><path d="M16 3v5M16 24v5M3 16h5M24 16h5M7 7l3.5 3.5M21.5 21.5L25 25M25 7l-3.5 3.5M10.5 21.5L7 25"/></svg>
+          <h3>Product &amp; technology consulting</h3><p>Executive-level guidance on product development and technology strategy, from concept to launch.</p></article>
+      </div>
+      <div class="pipeline">
+        <span class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+        <p>More protection products are in development. We share product details publicly only after our intellectual property is protected.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="console" aria-labelledby="console-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">Flagship product · Analyzer Elite Pro</p>
+          <h2 id="console-h">Early warning for the living environment.</h2>
+        </div>
+        <p>Analyzer Elite Pro is a rugged handheld screening device now in development for firefighters, EMTs, law enforcement, government agencies, and industrial teams. Try the simulated answer screen below: pick a target and press run.</p>
+      </div>
+
+      <div class="console">
+        <div class="console-left">
+          <div class="console-bar">
+            <span class="label" style="color:var(--dim)">Choose a target</span>
+            <span class="sim">Simulated results</span>
+          </div>
+          <div class="envs" role="group" aria-label="Screening target">
+            <button class="env" id="env-air" data-env="air" aria-pressed="true">
+              <svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7"/></svg>
+              <b>Air</b><span>Indoor &amp; outdoor</span>
+            </button>
+            <button class="env" id="env-water" data-env="water" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>
+              <b>Water</b><span>Supply &amp; runoff</span>
+            </button>
+            <button class="env" id="env-surface" data-env="surface" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18M9 6v12M15 6v12"/></svg>
+              <b>Surface</b><span>Equipment &amp; contact areas</span>
+            </button>
+            <button class="env" id="env-land" data-env="land" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><path d="M2 19l6-8 4 5 3-4 7 7z"/><circle cx="17" cy="6" r="2"/></svg>
+              <b>Land / site</b><span>Ground &amp; perimeter</span>
+            </button>
+            <button class="env" id="env-food" data-env="food" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><path d="M7 3v8a3 3 0 0 0 3 3v7M13 3v8M10 3v5M17 3c-2 2-2 7 0 9v9"/></svg>
+              <b>Food</b><span>Supply &amp; storage</span>
+            </button>
+            <button class="env" id="env-site" data-env="site" aria-pressed="false">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+              <b>Full sweep</b><span>All targets, one pass</span>
+            </button>
+          </div>
+          <div class="console-copy">
+            <h3 id="env-title">Air screening</h3>
+            <p id="env-desc">A quick check of the air around a crew before they move in.</p>
+          </div>
+          <button class="btn btn-gold run" id="run-btn">Run screening <span class="arrow">→</span></button>
+        </div>
+
+        <div class="console-right" aria-live="polite">
+          <div class="gauge">
+            <svg viewBox="0 0 200 200" aria-hidden="true">
+              <circle cx="100" cy="100" r="86" fill="none" stroke="#1D2A35" stroke-width="10"/>
+              <g id="ticks"></g>
+              <circle id="arc" cx="100" cy="100" r="86" fill="none" stroke="#E3B45C" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="540.35" stroke-dashoffset="540.35" transform="rotate(-90 100 100)"/>
+              <g id="sweep" style="transform-origin:100px 100px; opacity:0">
+                <line x1="100" y1="100" x2="100" y2="22" stroke="#62D2CD" stroke-width="1.5"/>
+                <circle cx="100" cy="22" r="3.5" fill="#62D2CD"/>
+              </g>
+            </svg>
+            <div class="gauge-center">
+              <span class="gauge-state" id="g-state" style="color:var(--gold)">READY</span>
+              <span class="gauge-sub" id="g-sub">Awaiting run</span>
+              <span class="gauge-num" id="g-num">RUN P-1042</span>
+            </div>
+          </div>
+          <div class="readout">
+            <div class="readout-row"><span>Device check</span><b class="ok">PASSED</b></div>
+            <div class="readout-row"><span>Screening</span><b id="r-scan">STANDBY</b></div>
+            <div class="readout-row"><span>Time &amp; location stamp</span><b id="r-stamp">—</b></div>
+          </div>
+          <div class="verdict" id="verdict" style="border-left-color:var(--line-2)">
+            <b id="v-title">No result yet</b>
+            <p id="v-desc">Choose a target and press run to see the answer screen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="field-teams" aria-labelledby="teams-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">Built for the people who go in first</p>
+          <h2 id="teams-h">One device on every belt.</h2>
+        </div>
+        <p>Small enough to clip on. Tough enough for the scene. Simple enough to read in the dark, in gloves, under pressure.</p>
+      </div>
+      <div class="roles">
+        <div class="role"><span class="code">FIRE</span><h3>Firefighters</h3><p>Check the air and surfaces at a scene before and after entry.</p></div>
+        <div class="role"><span class="code">EMS</span><h3>EMTs &amp; paramedics</h3><p>Know if a call site is safe for the crew and the patient.</p></div>
+        <div class="role"><span class="code">LAW</span><h3>Law enforcement</h3><p>Screen unknown areas and items without waiting on a lab.</p></div>
+        <div class="role"><span class="code">GOV</span><h3>Government agencies</h3><p>Monitor water, land, and food supply points in the field.</p></div>
+        <div class="role"><span class="code">IND</span><h3>Industrial teams</h3><p>Routine checks across plants, warehouses, and job sites.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="states-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">The answer screen</p>
+          <h2 id="states-h">Four answers. No guesswork.</h2>
+        </div>
+        <p>Every screening ends in one of four plain results, color-coded so a crew can act in a glance.</p>
+      </div>
+      <div class="states">
+        <article class="state normal"><div class="spot"></div><div class="dot"></div><h3>Normal</h3><p>Readings are within the expected range for this setting.</p></article>
+        <article class="state caution"><div class="spot"></div><div class="dot"></div><h3>Caution / Retest</h3><p>The reading is borderline. Run the screening again to confirm.</p></article>
+        <article class="state elevated"><div class="spot"></div><div class="dot"></div><h3>Elevated reading</h3><p>Something is above the normal range. Follow up with lab testing.</p></article>
+        <article class="state outside"><div class="spot"></div><div class="dot"></div><h3>Outside range</h3><p>Conditions were outside what the device can check, so no result is given.</p></article>
+      </div>
+      <p class="states-note">A result is a screening signal. It tells a team when to act and when to call for lab confirmation. It does not identify a specific substance.</p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="targets-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">Design targets</p>
+          <h2 id="targets-h">Engineered for the field.</h2>
+        </div>
+        <p>These are the goals Analyzer Elite Pro is being engineered to meet. Final ratings are confirmed through testing.</p>
+      </div>
+      <div class="targets">
+        <div class="target"><div class="big">Rugged</div><h3>Sealed, drop-rated housing</h3><p>Built to handle dust, water, heat, cold, and hard drops on the job.</p></div>
+        <div class="target"><div class="big">Full shift</div><h3>All-day battery</h3><p>Lasts a working shift and charges with a standard USB-C cable.</p></div>
+        <div class="target"><div class="big">Connected</div><h3>Team sync &amp; records</h3><p>Results carry a time and location stamp and share with the team. Records export for reports.</p></div>
+      </div>
+      <p class="targets-note">Targets, not certified ratings · Subject to required testing and regulatory approvals</p>
+    </div>
+  </section>
+
+  <section class="block" id="company" aria-labelledby="company-h">
+    <div class="shell company">
+      <div>
+        <p class="label">Kinevate Spatialyst Inc.</p>
+        <h2 id="company-h" style="font-size:clamp(2rem,4.6vw,3.6rem); font-weight:750; margin-top:14px">Safety. Security. Safeguards. Protection.</h2>
+        <p class="mission">Safety, security, safeguards, and protection sit at the center of <span>everything we build.</span></p>
+        <p class="company-body">From early assessment to field-level monitoring, our technologies help safeguard human health and the supply chains we all depend on. Kinevate Spatialyst Inc. is an Indiana corporation. Our work is delivered remotely, with on-site work only by written agreement.</p>
+        <div class="commit" aria-label="Our commitments">
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg><p><b>Plain, accurate claims</b><span>We say what a product does today and label every goal as a goal.</span></p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg><p><b>Privacy by default</b><span>We collect only what we need to reply to you, and we never sell it.</span></p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg><p><b>Written agreements</b><span>Every service engagement runs under a signed agreement that sets the scope.</span></p></div>
+          <div><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg><p><b>Protected innovation</b><span>Our designs and methods stay confidential until they are protected.</span></p></div>
+        </div>
+      </div>
+      <div class="divisions">
+        <div class="division lead"><p class="label">Hardware</p><h3>Analyzer Elite Pro</h3><p>Our first protection device, for field and industrial teams.</p></div>
+        <div class="division"><p class="label">Division</p><h3>Spatial Advisory &amp; Documentation</h3><p>Site plans, egress maps, and hazard documentation, delivered remotely.</p></div>
+        <div class="division"><p class="label">Division</p><h3>Spatial Data Solutions</h3><p>3D site capture that turns buildings into digital floor plans and records.</p></div>
+        <div class="division"><p class="label">Division</p><h3>SpatialOps AI</h3><p>Digital twins and layout planning for retail, kitchens, and warehouses.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="waitlist" aria-labelledby="wait-h">
+    <div class="shell wait">
+      <div class="wait-copy">
+        <p class="label">Contact &amp; early access</p>
+        <h2 id="wait-h">Let's talk.</h2>
+        <p>Join the Analyzer Elite Pro waitlist, ask about our services, or propose a partnership. The waitlist is free and does not require payment. Product pricing will be announced at launch. We reply by email.</p>
+        <div class="email-line">
+          <code id="email">kinevatespatialyst@outlook.com</code>
+          <button class="copy" id="copy-btn" type="button">Copy email</button>
+        </div>
+      </div>
+      <form class="form" id="wait-form" novalidate>
+        <input type="hidden" name="access_key" value="71ceb037-f1ea-4829-bbd4-0bd14061dc7b">
+        <input type="hidden" name="subject" value="New Kinevate Spatialyst website inquiry">
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="field"><label for="w-name">Name</label><input id="w-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="w-email">Work email</label><input id="w-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="w-topic">I'm interested in</label>
+          <select id="w-topic" name="interest">
+            <option>Analyzer Elite Pro waitlist</option><option>Spatial Advisory &amp; Documentation</option>
+            <option>Spatial Data Solutions</option><option>SpatialOps AI</option>
+            <option>Software development</option><option>Product &amp; technology consulting</option><option>Partnership</option>
+          </select>
+        </div>
+        <div class="field"><label for="w-org">Organization type</label>
+          <select id="w-org" name="organization">
+            <option>Fire department</option><option>EMS</option><option>Law enforcement</option>
+            <option>Government agency</option><option>Industrial / facility</option><option>Business</option><option>Other</option>
+          </select>
+        </div>
+        <label class="consent" for="w-consent"><input id="w-consent" name="consent" type="checkbox" value="yes" required>
+          <span>I agree to the <a href="#privacy">Privacy Notice</a> and <a href="#terms">Terms of Use</a>, and I agree to receive email from Kinevate Spatialyst Inc. about my request. I can unsubscribe at any time. I am 18 or older.</span></label>
+        <button class="btn btn-gold" type="submit" id="w-submit" style="justify-content:center">Send <span class="arrow">→</span></button>
+        <p class="form-msg" id="w-msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <section class="block legal" id="legal" aria-labelledby="legal-h">
+    <div class="shell">
+      <div class="head">
+        <div>
+          <p class="label">Legal</p>
+          <h2 id="legal-h">Terms, privacy, and disclosures.</h2>
+        </div>
+        <p>By using this website you agree to the terms below. Tap any heading to read it in full.</p>
+      </div>
+
+      <details id="terms">
+        <summary>Terms of Use</summary>
+        <div class="doc">
+          <p class="eff">Effective September 24, 2026</p>
+          <p>These Terms of Use ("Terms") govern your access to and use of this website (the "Site"), operated by Kinevate Spatialyst Inc., an Indiana corporation ("Kinevate," "we," "us," or "our"). By accessing or using the Site, you agree to these Terms. If you do not agree, do not use the Site.</p>
+          <h4>1. Informational purpose only</h4>
+          <p>All content on the Site is provided for general informational purposes only. Nothing on the Site constitutes legal, engineering, medical, environmental, regulatory, or other professional advice, and no professional relationship is formed by your use of the Site or by contacting us. Any services we provide are governed solely by a separate written agreement signed by Kinevate Spatialyst Inc. and the client.</p>
+          <h4>2. Products in development; no offer of sale</h4>
+          <p>Products described on the Site, including Analyzer Elite Pro, are in development and are not offered for sale. Descriptions, features, design targets, and availability are subject to change without notice and remain contingent on testing, validation, and any required regulatory approvals. Joining a waitlist creates no obligation on either party and is not an order, reservation of product, or contract of sale.</p>
+          <h4>3. Simulated demonstrations</h4>
+          <p>Interactive demonstrations on the Site use simulated data and randomly generated results for illustration only. They do not reflect actual measurements, product performance, or conditions at any location, and must not be relied upon for any safety, health, or operational decision.</p>
+          <h4>4. Intellectual property</h4>
+          <p>The Site and its content, including text, graphics, logos, designs, and code, are owned by or licensed to Kinevate Spatialyst Inc. and are protected by United States and international intellectual property laws. You may view the Site for your personal, non-commercial use. You may not copy, reproduce, modify, distribute, reverse engineer, or create derivative works from any part of the Site without our prior written consent.</p>
+          <h4>5. Acceptable use</h4>
+          <p>You agree not to use the Site for any unlawful purpose; attempt to gain unauthorized access to the Site or its systems; submit false, misleading, or another person's information; or interfere with the Site's operation.</p>
+          <h4>6. Disclaimer of warranties</h4>
+          <p>THE SITE AND ALL CONTENT ARE PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, AND NON-INFRINGEMENT, TO THE FULLEST EXTENT PERMITTED BY LAW.</p>
+          <h4>7. Limitation of liability</h4>
+          <p>TO THE FULLEST EXTENT PERMITTED BY LAW, KINEVATE SPATIALYST INC. AND ITS OFFICERS, DIRECTORS, SHAREHOLDERS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF DATA, PROFITS, OR GOODWILL, ARISING FROM OR RELATED TO YOUR USE OF, OR INABILITY TO USE, THE SITE OR ITS CONTENT.</p>
+          <h4>8. Indemnification</h4>
+          <p>You agree to indemnify and hold harmless Kinevate Spatialyst Inc. and its officers, directors, shareholders, employees, and agents from any claims, losses, or expenses, including reasonable attorneys' fees, arising from your violation of these Terms or your misuse of the Site.</p>
+          <h4>9. Third-party services and links</h4>
+          <p>The Site is hosted by a third-party provider and uses a third-party form service to deliver messages. We are not responsible for the content, policies, or practices of any third-party website or service.</p>
+          <h4>10. Governing law and venue</h4>
+          <p>These Terms are governed by the laws of the State of Indiana, without regard to its conflict-of-law rules. Any dispute arising from these Terms or the Site shall be brought exclusively in the state or federal courts located in Lake County, Indiana, and you consent to the jurisdiction of those courts.</p>
+          <h4>11. Changes; severability</h4>
+          <p>We may update these Terms at any time by posting a revised version with a new effective date. Continued use of the Site after changes are posted constitutes acceptance. If any provision is held unenforceable, the remaining provisions remain in full effect.</p>
+          <h4>12. Contact</h4>
+          <p>Questions about these Terms may be sent to kinevatespatialyst@outlook.com.</p>
+        </div>
+      </details>
+
+      <details id="privacy">
+        <summary>Privacy Notice</summary>
+        <div class="doc">
+          <p class="eff">Effective September 24, 2026</p>
+          <p>This Privacy Notice explains how Kinevate Spatialyst Inc. collects and uses information through this Site.</p>
+          <h4>Information we collect</h4>
+          <p>We collect only the information you choose to submit through our contact form or by email: your name, email address, organization type, and area of interest. Our hosting provider may automatically log standard technical data, such as IP address and browser type, for security and operation of the Site. The Site does not use advertising cookies or tracking pixels.</p>
+          <h4>How we use it</h4>
+          <p>We use your information only to respond to your request, send updates you asked for (such as launch news), and operate and secure the Site.</p>
+          <h4>Sharing</h4>
+          <p>We do not sell, rent, or trade your personal information. We share it only with service providers that help us operate the Site and deliver messages, and only as needed for that purpose, or when required by law.</p>
+          <h4>Retention and your choices</h4>
+          <p>We keep your information only as long as needed for the purpose it was collected, or as required by law. You may ask us to access, correct, or delete your information, or unsubscribe from our emails at any time, by writing to kinevatespatialyst@outlook.com.</p>
+          <h4>Children</h4>
+          <p>The Site is not directed to children, and we do not knowingly collect personal information from anyone under 18.</p>
+          <h4>Security and changes</h4>
+          <p>We use reasonable measures to protect information, but no method of transmission over the internet is completely secure. We may update this notice by posting a revised version with a new effective date.</p>
+        </div>
+      </details>
+
+      <details id="disclosures">
+        <summary>Product &amp; service disclosures</summary>
+        <div class="doc">
+          <p>Analyzer Elite Pro is in development and is not available for sale. It is designed as a screening aid. It is not a laboratory identification, diagnostic, or medical device. An elevated reading is a prompt to retest or seek laboratory confirmation. It is not a determination that any specific substance, organism, or condition is present.</p>
+          <p>Design targets described on this Site are engineering goals, not certified ratings. Final specifications will be stated only after testing.</p>
+          <p>Descriptions of our services are general summaries. The scope, deliverables, and terms of any engagement are defined only in a written agreement signed by Kinevate Spatialyst Inc.</p>
+          <p>Statements about future products, plans, or availability are forward-looking and may change. They are not promises or guarantees.</p>
+        </div>
+      </details>
+
+      <details id="trademarks">
+        <summary>Trademark &amp; confidentiality notice</summary>
+        <div class="doc">
+          <p>KINEVATE™, KINEVATE SPATIALYST™, ANALYZER ELITE™, SPATIALOPS AI™, and the K diamond logo are trademarks of Kinevate Spatialyst Inc. All other names and marks belong to their respective owners, and their use does not imply endorsement.</p>
+          <p>Kinevate Spatialyst Inc. does not publish the technical design, internal workings, or methods of its products on this Site. Nothing on this Site grants any license to any intellectual property of Kinevate Spatialyst Inc.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="shell">
+    <a class="brand" href="#top" aria-label="Back to top">
+      <svg viewBox="0 0 64 64" aria-hidden="true" style="width:28px;height:28px">
+        <path d="M32 3 L61 32 L32 61 L3 32 Z" fill="none" stroke="#E3B45C" stroke-width="2.4"/>
+        <path d="M24 18 V46" stroke="#E3B45C" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M42 18 L29 32 L42 46" fill="none" stroke="#E3B45C" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="45" cy="32" r="3" fill="#62D2CD"/>
+      </svg>
+      <span class="wordmark"><b>KINEVATE</b><span>SPATIALYST</span></span>
+    </a>
+    <nav class="footer-links" aria-label="Legal">
+      <a href="#terms">Terms of Use</a><a href="#privacy">Privacy Notice</a><a href="#disclosures">Disclosures</a><a href="#trademarks">Trademarks</a>
+    </nav>
+    <small>© <span id="year">2026</span> Kinevate Spatialyst Inc. All rights reserved. · kinevatespatialyst@outlook.com</small>
+    <p class="tm">KINEVATE™, KINEVATE SPATIALYST™, ANALYZER ELITE™, and the K diamond logo are trademarks of Kinevate Spatialyst Inc., an Indiana corporation.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* scroll progress */
+  const bar = document.getElementById('progress');
+  const onScroll = () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+  };
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* hero field: a dot terrain swept by a scan beam that follows the pointer */
+  const cv = document.getElementById('field');
+  const ctx = cv.getContext('2d');
+  let W=0, H=0, dpr=1, dots=[], cx=0, cy=0, tx=0, ty=0, angle=0, pings=[];
+  const labels = ['AIR · NORMAL','WATER · NORMAL','SURFACE · RETEST','LAND · NORMAL','FOOD · NORMAL','AIR · ELEVATED'];
+  function size(){
+    const r = cv.getBoundingClientRect();
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const gap = W < 600 ? 22 : 26;
+    dots = [];
+    for(let y=gap/2; y<H; y+=gap) for(let x=gap/2; x<W; x+=gap){
+      dots.push({x, y, s: Math.random(), glow:0});
+    }
+    cx = tx = W*0.72; cy = ty = H*0.48;
+  }
+  size(); addEventListener('resize', size);
+  cv.parentElement.addEventListener('pointermove', e => {
+    const r = cv.getBoundingClientRect(); tx = e.clientX - r.left; ty = e.clientY - r.top;
+  });
+  cv.parentElement.addEventListener('pointerleave', () => { tx = W*0.72; ty = H*0.48; });
+
+  function frame(t){
+    ctx.clearRect(0,0,W,H);
+    cx += (tx-cx)*0.06; cy += (ty-cy)*0.06;
+    angle = (angle + 0.018) % (Math.PI*2);
+    const R = Math.max(W,H)*0.55;
+    /* beam wedge */
+    const g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    g.addColorStop(0,'rgba(98,210,205,0.22)'); g.addColorStop(1,'rgba(98,210,205,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,angle-0.5,angle); ctx.closePath(); ctx.fill();
+    /* rings */
+    ctx.strokeStyle='rgba(227,180,92,0.16)'; ctx.lineWidth=1;
+    for(let i=1;i<=4;i++){ ctx.beginPath(); ctx.arc(cx,cy,i*R/4.4,0,Math.PI*2); ctx.stroke(); }
+    /* dots */
+    for(const d of dots){
+      const dx=d.x-cx, dy=d.y-cy, dist=Math.hypot(dx,dy);
+      if(dist < R){
+        let a = Math.atan2(dy,dx); if(a<0) a+=Math.PI*2;
+        let diff = angle - a; if(diff<0) diff += Math.PI*2;
+        if(diff < 0.08) d.glow = 1;
+      }
+      d.glow *= 0.965;
+      const wave = 0.5 + 0.5*Math.sin(t*0.0012 + d.x*0.012 + d.y*0.018);
+      const base = 0.16 + wave*0.16;
+      const gl = d.glow;
+      ctx.fillStyle = gl > 0.05
+        ? `rgba(${Math.round(98+(227-98)*d.s*gl)},${Math.round(210-(30*d.s))},${Math.round(205-(113*d.s*gl))},${base+gl*0.85})`
+        : `rgba(147,163,174,${base})`;
+      const rr = 1 + gl*1.4;
+      ctx.fillRect(d.x-rr/2, d.y-rr/2, rr, rr);
+      if(gl > 0.98 && d.s > 0.9965 && pings.length < 4){
+        pings.push({x:d.x, y:d.y, life:1, text:labels[(Math.random()*labels.length)|0]});
+      }
+    }
+    /* pings */
+    ctx.font = '500 10px "JetBrains Mono", monospace';
+    pings = pings.filter(p => (p.life -= 0.006) > 0);
+    for(const p of pings){
+      const warn = p.text.includes('ELEVATED') ? '224,122,95' : p.text.includes('RETEST') ? '227,180,92' : '111,207,151';
+      ctx.strokeStyle = `rgba(${warn},${p.life})`;
+      ctx.beginPath(); ctx.arc(p.x,p.y,4+(1-p.life)*14,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle = `rgba(${warn},${p.life})`;
+      ctx.beginPath(); ctx.arc(p.x,p.y,2.2,0,Math.PI*2); ctx.fill();
+      ctx.fillText(p.text, p.x+10, p.y-8);
+    }
+    /* center */
+    ctx.fillStyle='rgba(227,180,92,0.9)'; ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fill();
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* gauge ticks */
+  const ticks = document.getElementById('ticks');
+  let tickSvg = '';
+  for(let i=0;i<60;i++){
+    const a = i/60*Math.PI*2, r1 = i%5===0 ? 66 : 70, r2 = 74;
+    tickSvg += `<line x1="${100+Math.sin(a)*r1}" y1="${100-Math.cos(a)*r1}" x2="${100+Math.sin(a)*r2}" y2="${100-Math.cos(a)*r2}" stroke="${i%5===0?'#2A3A47':'#1D2A35'}" stroke-width="1.2"/>`;
+  }
+  ticks.innerHTML = tickSvg;
+
+  /* console demo */
+  const envs = {
+    air:{t:'Air screening', d:'A quick check of the air around a crew before they move in.'},
+    water:{t:'Water screening', d:'Checks a water source or runoff point for signs of a problem.'},
+    surface:{t:'Surface screening', d:'Checks equipment, tools, and contact areas after a call.'},
+    land:{t:'Land & site screening', d:'Sweeps ground and perimeter areas across a wider site.'},
+    food:{t:'Food screening', d:'Checks food supply and storage areas for warning signs.'},
+    site:{t:'Full sweep', d:'Runs every target in one pass for a complete site picture.'}
+  };
+  const states = {
+    normal:{label:'NORMAL', color:'var(--normal)', hex:'#6FCF97', title:'Normal', desc:'Readings are within the expected range for this setting. Crew can proceed.'},
+    caution:{label:'RETEST', color:'var(--caution)', hex:'#E3B45C', title:'Caution / Retest', desc:'The reading is borderline. Run the screening again to confirm.'},
+    elevated:{label:'ELEVATED', color:'var(--elevated)', hex:'#E07A5F', title:'Elevated reading', desc:'A reading is above the normal range. Follow up with lab testing before proceeding.'},
+    outside:{label:'NO RESULT', color:'var(--outside)', hex:'#7C8C98', title:'Outside range', desc:'Conditions were outside what the device can check, so no result was given. Adjust position and run again.'}
+  };
+  const pool = ['normal','normal','normal','caution','elevated','outside'];
+  const envBtns = document.querySelectorAll('.env');
+  const runBtn = document.getElementById('run-btn');
+  const arc = document.getElementById('arc'), sweep = document.getElementById('sweep');
+  const gState = document.getElementById('g-state'), gSub = document.getElementById('g-sub'), gNum = document.getElementById('g-num');
+  const rScan = document.getElementById('r-scan'), rStamp = document.getElementById('r-stamp');
+  const verdict = document.getElementById('verdict'), vTitle = document.getElementById('v-title'), vDesc = document.getElementById('v-desc');
+  const C = 540.35;
+  let runNo = 1042, busy = false;
+
+  function reset(){
+    arc.style.transition='none'; arc.style.strokeDashoffset = C; arc.setAttribute('stroke','#E3B45C');
+    gState.textContent='READY'; gState.style.color='var(--gold)'; gSub.textContent='Awaiting run';
+    rScan.textContent='STANDBY'; rScan.className=''; rStamp.textContent='—';
+    verdict.style.borderLeftColor='var(--line-2)'; vTitle.textContent='No result yet'; vTitle.style.color='';
+    vDesc.textContent='Choose a target and press run to see the answer screen.';
+  }
+  envBtns.forEach(b => b.addEventListener('click', () => {
+    if(busy) return;
+    envBtns.forEach(x => x.setAttribute('aria-pressed', x===b ? 'true' : 'false'));
+    const e = envs[b.dataset.env];
+    document.getElementById('env-title').textContent = e.t;
+    document.getElementById('env-desc').textContent = e.d;
+    reset();
+  }));
+
+  runBtn.addEventListener('click', () => {
+    if(busy) return; busy = true; runBtn.disabled = true;
+    runNo++; gNum.textContent = 'RUN P-' + runNo;
+    const outcome = pool[(Math.random()*pool.length)|0], s = states[outcome];
+    const dur = reduce ? 200 : 2600;
+    gState.textContent='SCANNING'; gState.style.color='var(--cyan)'; gSub.textContent='Hold steady';
+    rScan.textContent='IN PROGRESS'; rScan.className='wait';
+    arc.setAttribute('stroke','#62D2CD');
+    arc.style.transition='none'; arc.style.strokeDashoffset = C;
+    arc.getBoundingClientRect();
+    arc.style.transition = `stroke-dashoffset ${dur}ms cubic-bezier(.4,.1,.2,1), stroke .4s`;
+    arc.style.strokeDashoffset = 0;
+    sweep.style.opacity = 1;
+    const start = performance.now();
+    (function spin(now){
+      const p = Math.min((now-start)/dur, 1);
+      sweep.style.transform = `rotate(${p*360*2}deg)`;
+      if(p < 1) requestAnimationFrame(spin);
+      else {
+        sweep.style.opacity = 0;
+        arc.setAttribute('stroke', s.hex);
+        gState.textContent = s.label; gState.style.color = s.color; gSub.textContent = 'Run complete';
+        rScan.textContent = 'COMPLETE'; rScan.className = 'ok';
+        const d = new Date();
+        rStamp.textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' · GPS';
+        verdict.style.borderLeftColor = s.color; vTitle.textContent = s.title; vTitle.style.color = s.color; vDesc.textContent = s.desc;
+        busy = false; runBtn.disabled = false;
+      }
+    })(start);
+  });
+
+  /* spotlight on result cards */
+  /* open a legal panel when its link is used */
+  function openFromHash(){
+    const el = location.hash && document.getElementById(location.hash.slice(1));
+    if(el && el.tagName === 'DETAILS'){ el.open = true; }
+  }
+  addEventListener('hashchange', openFromHash); openFromHash();
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+    const el = document.getElementById(a.getAttribute('href').slice(1));
+    if(el && el.tagName === 'DETAILS') el.open = true;
+  }));
+
+  document.querySelectorAll('.state, .pillar').forEach(el => el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX-r.left)+'px'); el.style.setProperty('--my', (e.clientY-r.top)+'px');
+  }));
+
+  /* copy email */
+  const copyBtn = document.getElementById('copy-btn');
+  copyBtn.addEventListener('click', () => {
+    const text = document.getElementById('email').textContent;
+    const done = () => { copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy email', 1600); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(selectIt);
+    } else selectIt();
+    function selectIt(){
+      const r = document.createRange(); r.selectNodeContents(document.getElementById('email'));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); copyBtn.textContent='Selected';
+    }
+  });
+
+  /* waitlist: sends through Web3Forms once a real key is added; until then says so plainly */
+  const form = document.getElementById('wait-form'), msg = document.getElementById('w-msg'), sub = document.getElementById('w-submit');
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); msg.className='form-msg';
+    const name = form.querySelector('#w-name'), email = form.querySelector('#w-email');
+    if(!name.value.trim()){ msg.textContent='Please enter your name.'; name.focus(); return; }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)){ msg.textContent='Please enter a valid email address.'; email.focus(); return; }
+    const consent = form.querySelector('#w-consent');
+    if(!consent.checked){ msg.textContent='Please check the box to agree to the Privacy Notice and Terms of Use.'; consent.focus(); return; }
+    const key = form.querySelector('[name="access_key"]').value;
+    if(key === 'PASTE_YOUR_KEY_HERE'){
+      msg.textContent='Online messages open soon. For now, please email us at kinevatespatialyst@outlook.com.';
+      return;
+    }
+    sub.disabled = true; msg.textContent='Sending…';
+    try{
+      const res = await fetch('https://api.web3forms.com/submit', {method:'POST', headers:{'Accept':'application/json'}, body:new FormData(form)});
+      const data = await res.json();
+      if(data.success){ msg.textContent="Message received. We'll reply by email."; msg.className='form-msg ok'; form.reset(); }
+      else msg.textContent='Your message did not go through. Please try again or email us directly.';
+    }catch(err){ msg.textContent='Could not reach the message service. Please try again or email us directly.'; }
+    sub.disabled = false;
+  });
+})();
+</script>
+</body>
+</html>
